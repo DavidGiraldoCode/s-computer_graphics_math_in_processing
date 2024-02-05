@@ -10,33 +10,64 @@ int nx, ny;
 int[][] uniformGrid;
 
 int[][] pointsCloud;
+//------------------------ Interpolation
+float sampleOne;
+float sampleTwo;
+float continuity;
 
 void setup() {
   //noCursor();
+  sampleOne = 14;
+  sampleTwo = 387;
+  continuity = 20; // the amount of new data points to interpolate
   size(800, 800);
   background(0, 0, 0, 5);
   createCoordinatesSystem();
-  stroke(255);
+  drawInterpolatedLine();
+}
+
+void drawInterpolatedLine() {
+  noStroke();
   noSmooth();
-  for (int i = 0; i < 100; i++) {
-    //println(cuadraticCurve((i*4)));
-    //point(int(i*2), cuadraticCurve(i*0.2));
-    //point((i*0.8), field((i*0.2),i));
-    
-    point((i*0.4) , scalarField((i*0.4),(i*0.1)));
+  println(sampleOne); // The sample f(Xo)
+  for (int i = 0; i < continuity; i++) {
+    float t = i*(1 / continuity);
+    ellipse(linearInterpolation(t, sampleOne, sampleTwo), 0, 10, 10);
+    println("interpolated: "+linearInterpolation(t, sampleOne, sampleTwo));
   }
-  //print(matrix[0].length);
+  fill(255, 0, 0);
+  ellipse(sampleOne, 0, 10, 10);
+  fill(0, 255, 0);
+  ellipse(sampleTwo, 0, 10, 10);
+  println(sampleTwo);//The sample f(Xo)
+}
+
+float linearInterpolation( float t, float startSample, float endSample) {
+  /*
+  Special case in which "t" belongs [0,1]
+  (1-t)*f(X0) + t*f(X1)
+  */
+  float interpolated = ((1-t) * startSample) + (t*endSample);
+  return interpolated;
 }
 
 
-float scalarField(float x, float y){
-  
+void mousePressed() {
+  background(0, 0, 0, 5);
+  createCoordinatesSystem();
+  sampleTwo = globalMouseX();
+  drawInterpolatedLine();
+}
+
+
+float scalarField(float x, float y) {
+
   float result = 2*(x*y) + (4*(y*y));
   return result;
 }
 
-float field(float x, float y){
-  
+float field(float x, float y) {
+
   float result = (x * x) + (x*y);
   return result;
 }
@@ -51,6 +82,9 @@ float cuadraticCurve(float base) { //, int m, int c
   }
   return result; //m*x + c;
 }
+
+
+
 
 void draw() {
 }
@@ -96,8 +130,6 @@ int[][] createUniformSampleGrid(int[] minPoint, int[] maxPoint, int nx, int ny) 
   return uniformGrid;
 }
 
-void mousePressed() {
-}
 
 int globalMouseX() {
   return mouseX - (width/2);
