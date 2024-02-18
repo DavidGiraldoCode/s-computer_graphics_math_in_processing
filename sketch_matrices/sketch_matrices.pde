@@ -2,8 +2,11 @@ float[] point = new float[3];
 float[][] matrix = {{0, -1, 30}, {-1, 0, 30}, {0, 0, 1}};
 
 float[] rotatedPoint = new float[3];
+float[] pointB = new float[3];
 float delta = 0;
 float[][] rotationMatrix = {{cos(PI*delta), -sin(PI*delta), 0}, {sin(PI*delta), cos(PI*delta), 0}, {0, 0, 1}};
+float[][] olisationMatrix = new float[3][3];
+float[][] translation = new float[3][3];
 
 void setup() {
   size(800, 800);
@@ -13,6 +16,10 @@ void setup() {
 void draw() {
   background(0, 0, 0, 5);
   createCoordinatesSystem();
+  delta += PI * 0.02;
+  if (delta >= (PI * 2)) {
+    delta = 0;
+  }
   stroke(255);
   line(-300, getY(-300), 300, getY(300));
 
@@ -27,17 +34,42 @@ void draw() {
   fill(255, 0, 0);
   ellipse(newPoint[0], newPoint[1], 8, 8);
 
-  float[] p = {50, 0, 1};
-  delta = map (globalMouseX(), -width/2 , width/2, 0, 1);
-  
+  float[] p = {80, 0, 1};
+  //delta = map (globalMouseX(), -width/2 , width/2, 0, 1);
+
   println(delta);
+  rotationMatrix[0][0] = cos(delta);
+  rotationMatrix[1][0] = sin(delta);
+
+  rotationMatrix[0][1] = -sin(delta);
+  rotationMatrix[1][1] = cos(delta);
+  /*
   rotationMatrix[0][0] = cos(PI/delta);
-  rotationMatrix[0][1] = -sin(PI/delta);
-  rotationMatrix[1][0] = sin(PI/delta);
-  rotationMatrix[1][1] = cos(PI/delta);
+   rotationMatrix[0][1] = -sin(PI/delta);
+   rotationMatrix[1][0] = sin(PI/delta);
+   rotationMatrix[1][1] = cos(PI/delta);
+   */
   rotatedPoint = getNewPoint(rotationMatrix, p);
   fill(0, 255, 0);
+
+
   ellipse(rotatedPoint[0], rotatedPoint[1], 8, 8);
+
+  olisationMatrix[0][0]= cos(delta);
+  olisationMatrix[1][0]= 0;//sin(delta);
+  olisationMatrix[2][0]= 0;
+
+  olisationMatrix[0][1]= 0;//-sin(delta);
+  olisationMatrix[1][1]= 1;//cos(delta);
+  olisationMatrix[2][1]= 0;
+
+  olisationMatrix[0][2]= 0;
+  olisationMatrix[1][2]= 0;
+  olisationMatrix[2][2]= 1;
+
+  pointB = getNewPoint(olisationMatrix, p);
+  fill(255, 0, 0);
+  ellipse(pointB[0], pointB[1], 8, 8);
 
   //print(newPoint);
 }
@@ -83,3 +115,15 @@ float[] getNewPoint(float[][] matrix, float[] point) {
   }
   return newPoint;
 }
+
+/*
+float[] getNewPoint(float[][] matrix, float[] point) {
+  float[] newPoint = new float[3];
+  for (int mRow=0; mRow < matrix.length; mRow++) {
+    for (int mCol=0; mCol < matrix[mRow].length; mCol++) {
+      newPoint[mRow] += point[mCol] * matrix[mRow][mCol];
+    }
+  }
+  return newPoint;
+}
+*/

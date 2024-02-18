@@ -26,7 +26,7 @@ void setup() {
     strokeCap(PROJECT);
     noSmooth();
     stroke(255);
-    point(pointsCloud[i][0], pointsCloud[i][1]);
+    //point(pointsCloud[i][0], pointsCloud[i][1]);
   }
 
   minPoint[0] = -146;
@@ -40,8 +40,8 @@ void setup() {
    maxPoint[0] = 60;
    maxPoint[1] = 60;*/
 
-  nx = 10;
-  ny = 10;
+  nx = 4;
+  ny = 4;
   //print(newPoint);
   noStroke();
   fill(255, 0, 0);
@@ -52,9 +52,9 @@ void setup() {
   uniformGrid = createUniformSampleGrid(minPoint, maxPoint, nx, ny);
   strokeCap(PROJECT);
   noSmooth();
-  stroke(0,0,255);
+  stroke(255);
   for (int i =0; i < uniformGrid.length; i++) {
-   // point(uniformGrid[i][0], uniformGrid[i][1]);
+    point(uniformGrid[i][0], uniformGrid[i][1]);
   }
 }
 
@@ -109,9 +109,9 @@ void mousePressed() {
   maxPoint[0] = globalMouseX();
   maxPoint[1] = globalMouseY();
 
-  //background(0, 0, 0, 5);
-  //createCoordinatesSystem();
-  //print(newPoint);
+  background(0, 0, 0, 5);
+  createCoordinatesSystem();
+  //println(newPoint);
   noStroke();
   fill(255, 0, 0);
   ellipse(minPoint[0], minPoint[1], 10, 10);
@@ -123,7 +123,7 @@ void mousePressed() {
   noSmooth();
   stroke(255);
   for (int i =0; i < uniformGrid.length; i++) {
-    //point(uniformGrid[i][0], uniformGrid[i][1]);
+    point(uniformGrid[i][0], uniformGrid[i][1]);
   }
 }
 

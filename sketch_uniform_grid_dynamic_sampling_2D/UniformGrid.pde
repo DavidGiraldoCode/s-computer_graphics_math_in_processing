@@ -1,0 +1,73 @@
+public class UniformGrid {
+
+  private int nx, ny, nCols, nRows, dx, dy;
+  //private int[] minPoint, maxPoint;
+  private int[][] samplePoints;
+  private int[] sampleValues;
+
+  public UniformGrid(int nx, int ny, int[] minPoint, int[] maxPoint) {
+    this.nx = nx;
+    this.ny = ny;
+    //this.minPoint = minPoint;
+    //this.maxPoint = maxPoint;
+    nCols = nx - 1; //number of rows cells
+    nRows = ny - 1; //number of columns cells
+    samplePoints = new int[nx*ny][2];
+    sampleValues = new int[nx*ny];
+
+    int xMin =  minPoint[0];
+    int yMin =  minPoint[1];
+    int xMax =  maxPoint[0];
+    int yMax =  maxPoint[1];
+
+    dx = (xMax - xMin) / nCols; // Call's width
+    dy = 0;
+    if (ny > 1) {
+      dy = (yMax - yMin) / nRows; // Cell's height
+    }
+
+    for (int y = 0; y < ny; y++) {
+      for (int x = 0; x < nx; x++) {
+
+        int linearIndex = (y*nx)+x;
+
+        samplePoints[linearIndex][0] = (x*dx) + xMin;
+
+        if (ny > 1) {
+          samplePoints[linearIndex][1] = (y*dy) + yMin;
+        } else {
+          samplePoints[linearIndex][1] = yMin;
+        }
+
+        sampleValues[linearIndex] = 0;
+        println("uniformGrid["+((y*nx)+x)+"][0] = "+((x*dx) + xMin));
+        println("uniformGrid["+((y*nx)+x)+"][1] = "+((y*dy) + yMin));
+        println("-----------------");
+      }
+    }
+  }
+
+
+  public int[] getSampleIndex(int[] point) {
+    int linearIndex = (point[1]*nx)+point[0];
+    return samplePoints[linearIndex];
+  }
+
+  public int[] getSamplePosition(int linearIndex) {
+    int[] coordinates = new int[2];
+    coordinates[0] = (linearIndex % this.nx)*dx;
+    coordinates[1] = (int)(Math.floor(linearIndex / this.nx) % ny)*dx;
+    return coordinates;
+  }
+
+  public int getSampleValue(int[] point) {
+    int linearIndex = (point[1]*nx)+point[0];
+    return sampleValues[linearIndex];
+  }
+  public int getSize(){
+  return sampleValues.length;
+  }
+  public void setSampleValue(int linearIndex, int newValue) {
+    sampleValues[linearIndex] = newValue;
+  }
+}
