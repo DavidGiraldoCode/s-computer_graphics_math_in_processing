@@ -1,4 +1,6 @@
 public class Tool {
+  
+  //private float[] identityMatrix = {1, 0, 0, 0, 1, 0, 0, 0, 1};
 
   public Tool() {
   }
@@ -12,4 +14,17 @@ public class Tool {
     return interpolated;
   }
 
+  public float[] applyMatrix3(float[] vector, float[] matrix) {
+    //vector most be [x,y,1]
+    float[] newVector = new float[3];
+    for (int i = 0; i < 3; i++) {
+      newVector[0] += vector[(i%3)]*matrix[i];
+      newVector[1] += vector[(i%3)]*matrix[i+3];
+      //println();
+      //y*nx + x
+      //Math.floor(i/3)
+    }
+    
+    return newVector;
+  }
 }
