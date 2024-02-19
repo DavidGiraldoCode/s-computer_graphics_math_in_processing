@@ -13,20 +13,22 @@ int rectSize = 200;
 
 //Testing Matrixes
 float[] point = new float[3];
+float change = 0;
 float delta = 0;
-float[] matrix = {0, -1, 1, -1, 0, 1, 0, 0, 1}; // Affine coordinate
-float[] rotationMatrix = {cos(PI*delta), -sin(PI*delta), 0, sin(PI*delta), cos(PI*delta), 0, 0, 0, 1};
-
+float[] reflectionMatrix = {0, -1, 1, -1, 0, 1, 0, 0, 1}; // Affine coordinate
+float[] rotationMatrix = {cos(PI*change), -sin(PI*change), 0, sin(PI*change), cos(PI*change), 0, 0, 0, 1};
+float[] matrix = {1, 0, 1, 0, 1, 1, 1, 1, 1};
 
 void setup() {
   colorMode(HSB, 360, 100, 100);
   size(800, 800);
   createCoordinatesSystem();
 
-  int[] minPoint = {-200, -200};
-  int[] maxPoint = {200, 200};
-  nx = 24;
-  ny = 24;
+
+  int[] minPoint = {-320, -320};
+  int[] maxPoint = {320, 320};
+  nx = 32;
+  ny = 32;
   uniformGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
 
   for (int i = 0; i < uniformGrid.getSize(); i++) {
@@ -55,24 +57,45 @@ void draw() {
   ellipse(point[0], point[1], 10, 10);
 
   //Reflextion matrix in affine coordinates
-  float[] newPoint = tool.applyMatrix3(point, matrix);
+  float[] newPoint = tool.applyMatrix3(point, reflectionMatrix);
   fill(0, 100, 100);
   ellipse(newPoint[0], newPoint[1], 8, 8);
 
   //Linear rotation matrix in affine coordinates
-  delta += PI * 0.05;
-  if (delta >= (PI * 2)) {
+  change += PI * 0.05;
+  delta += 0.1;
+  if (delta == 1) {
     delta = 0;
   }
-  rotationMatrix[0] = cos(delta);
-  rotationMatrix[1] = -sin(delta);
+  //println(delta);
+
+  if (change >= (PI * 2)) {
+    change = 0;
+    println("Cycle ends");
+  }
+  rotationMatrix[0] = cos(change);
+  rotationMatrix[1] = -sin(change);
   rotationMatrix[2] = 0;
-  rotationMatrix[3] = sin(delta);
-  rotationMatrix[4] = cos(delta);
+  rotationMatrix[3] = sin(change);
+  rotationMatrix[4] = cos(change);
   float[] anotherPoint = tool.applyMatrix3(point, rotationMatrix);
   fill(0, 100, 100);
-  ellipse(anotherPoint[0], anotherPoint[1], dotSize, dotSize);
+  //ellipse(anotherPoint[0], anotherPoint[1], dotSize, dotSize);
 
+  matrix[3] = sin(change)*5;
+  float[] yetAnotherPoint = tool.applyMatrix3(point, matrix);
+  fill(0, 100, 100);
+  //ellipse(yetAnotherPoint[0], yetAnotherPoint[1], dotSize, dotSize);
+
+  float divisor = PI/4;
+  if (change % divisor > (divisor-1) && change % divisor < divisor) {
+    //println("Save sample");
+  }
+
+  animatedGrid();
+}
+
+void animatedGrid() {
   //Applying matrix to the grid position.
   for (int i = 0; i < uniformGrid.getSize(); i++) {
     float[] point = {0, 0, 1};
@@ -84,13 +107,44 @@ void draw() {
     //ellipse(anotherPoint[0], anotherPoint[1], dotSize, dotSize);
   }
   float offSet = 0;
+  float sample = 0;
+  float scalar = 10;
+  float minium = 10;
+
+  /*
+  matrix[3] = sin(change)*5;
+   
+   matrix[0] = cos(change);
+   matrix[1] = -sin(change);
+   matrix[2] = 0;
+   matrix[3] = sin(change);
+   matrix[4] = cos(change);
+   float[] yetAnotherPoint = tool.applyMatrix3(point, matrix);
+   */
   for (int i = 0; i < uniformGrid.getSize(); i++) {
-    uniformGrid.setSampleValue(i, (-sin(delta + (i*0.5))*4)+5);
+    matrix[0] = cos(change + offSet);
+    matrix[1] = -sin(change + offSet);
+    matrix[2] = 0;
+    matrix[3] = sin(change + offSet);
+    matrix[4] = cos(change + offSet);
+
+    sample = ((cos (change - offSet) * scalar ));
+    //sample = noise(delta - offSet )*minium;
+    //(cos(change + (i/0.024) * 2) - (sin (change + (i*0.5)) * 8 ))+5;
+    uniformGrid.setSampleValue(i, sample);
+    //uniformGrid.setSampleValue(i, (sin(change + (i*0.001))*6)+3);
     float[] point = {0, 0, 1};
     point[0] = uniformGrid.getSamplePosition(i)[0];
     point[1] = uniformGrid.getSamplePosition(i)[1];
-    ellipse(point[0], point[1], uniformGrid.getSampleValue(i), uniformGrid.getSampleValue(i));
-    offSet += (i*0.1);
+
+    float[] pointPrime = tool.applyMatrix3(point, matrix);
+    offSet = (i*( PI/8 ));
+    float vectorMagnitud = sqrt(pow(pointPrime[0], 2)+pow(pointPrime[1], 2));
+    ellipse(point[0], point[1], (0.06*pointPrime[0]), (0.06*pointPrime[0]));
+    //ellipse(point[0], point[1], (0.06*vectorMagnitud), (0.06*vectorMagnitud));
+    //ellipse(point[0], point[1], uniformGrid.getSampleValue(i), uniformGrid.getSampleValue(i));
+    //ellipse(point[0]+uniformGrid.getSampleValue(i), point[1]+uniformGrid.getSampleValue(i),uniformGrid.getSampleValue(i), uniformGrid.getSampleValue(i));
+    //offSet += (i*0.00002);
   }
 }
 
