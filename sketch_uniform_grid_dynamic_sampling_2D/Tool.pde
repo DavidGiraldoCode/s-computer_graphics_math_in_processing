@@ -18,8 +18,8 @@ public class Tool {
     //vector most be [x,y,1]
     float[] newVector = new float[3];
     for (int i = 0; i < 3; i++) {
-      newVector[0] += vector[(i%3)]*matrix[i];
-      newVector[1] += vector[(i%3)]*matrix[i+3];
+      newVector[0] += vector[(i%3)]*matrix[(i%3)];
+      newVector[1] += vector[(i%3)]*matrix[(i%3)+3];
       //println();
       //y*nx + x
       //Math.floor(i/3)

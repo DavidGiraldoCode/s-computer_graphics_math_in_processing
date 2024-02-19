@@ -2,8 +2,8 @@ public class UniformGrid {
 
   private int nx, ny, nCols, nRows, dx, dy;
   //private int[] minPoint, maxPoint;
-  private int[][] samplePoints;
-  private int[] sampleValues;
+  private float[][] samplePoints;
+  private float[] sampleValues;
 
   public UniformGrid(int nx, int ny, int[] minPoint, int[] maxPoint) {
     this.nx = nx;
@@ -12,8 +12,8 @@ public class UniformGrid {
     //this.maxPoint = maxPoint;
     nCols = nx - 1; //number of rows cells
     nRows = ny - 1; //number of columns cells
-    samplePoints = new int[nx*ny][2];
-    sampleValues = new int[nx*ny];
+    samplePoints = new float[nx*ny][2];
+    sampleValues = new float[nx*ny];
 
     int xMin =  minPoint[0];
     int yMin =  minPoint[1];
@@ -48,26 +48,32 @@ public class UniformGrid {
   }
 
 
-  public int[] getSampleIndex(int[] point) {
-    int linearIndex = (point[1]*nx)+point[0];
+  public float[] getSampleIndex(float[] point) {
+    int linearIndex = int((point[1]*nx)+point[0]);
     return samplePoints[linearIndex];
   }
 
-  public int[] getSamplePosition(int linearIndex) {
+  public float[] getSamplePosition(int linearIndex) {
     //int[] coordinates = new int[2];
     //coordinates[0] = (int)(linearIndex % this.nx)*dx;
     //coordinates[1] = (int)(Math.floor(linearIndex / this.nx) % ny)*dy;
     return samplePoints[linearIndex];
   }
 
-  public int getSampleValue(int[] point) {
+  public float getSamplePointValue(int[] point) {
     int linearIndex = (point[1]*nx)+point[0];
     return sampleValues[linearIndex];
   }
-  public int getSize(){
-  return sampleValues.length;
+  
+  public float getSampleValue(int linearIndex) {
+    //int linearIndex = (point[1]*nx)+point[0];
+    return sampleValues[linearIndex];
   }
-  public void setSampleValue(int linearIndex, int newValue) {
+  
+  public int getSize() {
+    return sampleValues.length;
+  }
+  public void setSampleValue(int linearIndex, float newValue) {
     sampleValues[linearIndex] = newValue;
   }
 }

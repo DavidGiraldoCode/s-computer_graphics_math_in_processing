@@ -2,29 +2,35 @@
 
 int[] HSBcolorSamples = {360, 30, 240, 300, 180, 150};
 UniformGrid uniformGrid;
+int nx, ny;
 Tool tool = new Tool();
 
 float continuityField;
 float domainPoint;
 
-int dotSize = 10;
-int rectHeigth = 200;
+int dotSize = 20;
+int rectSize = 200;
 
 //Testing Matrixes
 float[] point = new float[3];
+float delta = 0;
 float[] matrix = {0, -1, 1, -1, 0, 1, 0, 0, 1}; // Affine coordinate
+float[] rotationMatrix = {cos(PI*delta), -sin(PI*delta), 0, sin(PI*delta), cos(PI*delta), 0, 0, 0, 1};
+
 
 void setup() {
   colorMode(HSB, 360, 100, 100);
   size(800, 800);
   createCoordinatesSystem();
 
-  int[] minPoint = {20, 20};
-  int[] maxPoint = {300, 300};
-  uniformGrid = new UniformGrid(6, 6, minPoint, maxPoint);
+  int[] minPoint = {-200, -200};
+  int[] maxPoint = {200, 200};
+  nx = 24;
+  ny = 24;
+  uniformGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
 
   for (int i = 0; i < uniformGrid.getSize(); i++) {
-    int[] point = uniformGrid.getSamplePosition(i);
+    float[] point = uniformGrid.getSamplePosition(i);
     fill(255);
     noStroke();
     ellipse(point[0], point[1], dotSize, dotSize);
@@ -39,23 +45,57 @@ void mousePressed() {
 
 
 void draw() {
-  background(0, 0, 0, 5);
+  background(0, 0, 0, .5);
   createCoordinatesSystem();
 
-  point[0] = globalMouseX();
-  point[1] = globalMouseY();
+  point[0] = 20;//globalMouseX();
+  point[1] = 0;//globalMouseY();
   point[2] = 1; // Affine coordinate
-  
   fill(255);
   ellipse(point[0], point[1], 10, 10);
 
+  //Reflextion matrix in affine coordinates
   float[] newPoint = tool.applyMatrix3(point, matrix);
   fill(0, 100, 100);
   ellipse(newPoint[0], newPoint[1], 8, 8);
+
+  //Linear rotation matrix in affine coordinates
+  delta += PI * 0.05;
+  if (delta >= (PI * 2)) {
+    delta = 0;
+  }
+  rotationMatrix[0] = cos(delta);
+  rotationMatrix[1] = -sin(delta);
+  rotationMatrix[2] = 0;
+  rotationMatrix[3] = sin(delta);
+  rotationMatrix[4] = cos(delta);
+  float[] anotherPoint = tool.applyMatrix3(point, rotationMatrix);
+  fill(0, 100, 100);
+  ellipse(anotherPoint[0], anotherPoint[1], dotSize, dotSize);
+
+  //Applying matrix to the grid position.
+  for (int i = 0; i < uniformGrid.getSize(); i++) {
+    float[] point = {0, 0, 1};
+    point[0] = uniformGrid.getSamplePosition(i)[0];
+    point[1] = uniformGrid.getSamplePosition(i)[1];
+    fill(255);
+    noStroke();
+    //anotherPoint = tool.applyMatrix3(point, rotationMatrix);
+    //ellipse(anotherPoint[0], anotherPoint[1], dotSize, dotSize);
+  }
+  float offSet = 0;
+  for (int i = 0; i < uniformGrid.getSize(); i++) {
+    uniformGrid.setSampleValue(i, (-sin(delta + (i*0.5))*4)+5);
+    float[] point = {0, 0, 1};
+    point[0] = uniformGrid.getSamplePosition(i)[0];
+    point[1] = uniformGrid.getSamplePosition(i)[1];
+    ellipse(point[0], point[1], uniformGrid.getSampleValue(i), uniformGrid.getSampleValue(i));
+    offSet += (i*0.1);
+  }
 }
 
 void createCoordinatesSystem() {
-  background(0, 0, 0, 5);
+  //background(0, 0, 0, 5);
   translate(width/2, height/2);
   scale(1, -1);
   createBackgroundGrid(20, 20, 40);
