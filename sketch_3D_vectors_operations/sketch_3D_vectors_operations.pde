@@ -1,42 +1,46 @@
 float[] P00, P10, P01, P11;
-float[] vectorA, vectorB, vectorC, vectorD, AcrossB, CcrossD, ABNorm;
+float[] vectorA, vectorB, vectorC, vectorD, crossBA, crossDC, ABNorm;
 
 void setup() {
   size(1280, 720, P3D);
   P00 = new float[4]; //Affine coordinates
-  P00[0] = 400;
-  P00[1] = 200;
-  P00[2] = -300;
+  P00[0] = 100;
+  P00[1] = 500;
+  P00[2] = 0;
   P00[3] = 1;
   P10 = new float[4]; //Affine coordinates
   P10[0] = 300;
-  P10[1] = 500;
-  P10[2] = 000;
+  P10[1] = 600;
+  P10[2] = 10;
   P10[3] = 1;
   P01 = new float[4]; //Affine coordinates
-  P01[0] = 50;
+  P01[0] = 280;
   P01[1] = 400;
-  P01[2] = -100;
+  P01[2] = -200;
   P01[3] = 1;
   P11 = new float[4]; //Affine coordinates
-  P11[0] = 200;
-  P11[1] = 100;
-  P11[2] = 200;
+  P11[0] = 600;
+  P11[1] = 600;
+  P11[2] = 0;
   P11[3] = 1;
 }
 
 void draw() {
   basicSetUp();
-  P10[0] = mouseX;
-  P10[1] = mouseY;
-  vectorA = vectorSubstraction(P00, P10);
-  vectorB = vectorSubstraction(P00, P01);
-  vectorC = vectorSubstraction(P10, P01);
-  vectorD = vectorSubstraction(P11, P01);
-  
-  AcrossB = crossProduct(vectorA, vectorB);
-  vertorNorm(AcrossB);
+  P11[0] = mouseX;
+  P11[1] = mouseY;
+  vectorA = vectorSubstraction(P10, P00);
+  vectorB = vectorSubstraction(P01, P00);
+  vectorC = vectorSubstraction(P01, P11);
+  vectorD = vectorSubstraction(P10, P11);
+
+  crossBA = crossProduct(vectorB, vectorA);
+  crossDC = crossProduct(vectorD, vectorC);
+  vertorNorm(crossBA, P00);
+  vertorNorm(crossDC, P11);
+
   displayTriangle(P00, P10, P01);
+  displayTriangle(P11, P01, P10);
 }
 
 void displayTriangle(float[] A, float[] B, float[] C) {
@@ -49,31 +53,31 @@ void displayTriangle(float[] A, float[] B, float[] C) {
   endShape();
 }
 
-float[] vectorSubstraction(float[] P00, float[] P10) {
+float[] vectorSubstraction(float[] P1, float[] P0) {
 
   // P10 - P00
-  float Ax = P10[0] - P00[0]; // X1 - X0
-  float Ay = P10[1] - P00[1]; // Y1 - Y0
-  float Az = P10[2] - P00[2]; // Z1 - Z0
+  float Ax = P1[0] - P0[0]; // X1 - X0
+  float Ay = P1[1] - P0[1]; // Y1 - Y0
+  float Az = P1[2] - P0[2]; // Z1 - Z0
 
   //Render
   stroke(255);
-  //Vector of point P00
+  //Vector of point P0
   beginShape(LINES);
   vertex(0, 0, 0);
-  vertex(P00[0], P00[1], P00[2]);
+  vertex(P0[0], P0[1], P0[2]);
   endShape();
   //text("P00("+P00x+","+P00y+")", P00x, P00y);
-  //Vector of point P10
+  //Vector of point P1
   beginShape(LINES);
   vertex(0, 0, 0);
-  vertex(P10[0], P10[1], P10[2]);
+  vertex(P1[0], P1[1], P1[2]);
   endShape();
   //text("P00("+P10x+","+P10y+")", P10x, P10y);
 
   //Vector A , distance between P10 - P00
   pushMatrix();
-  translate(P00[0], P00[1], P00[2]);
+  translate(P0[0], P0[1], P0[2]);
   stroke(255, 0, 0);
   beginShape(LINES);
   vertex(0, 0, 0);
@@ -107,7 +111,7 @@ float[] crossProduct(float[] vA, float[] vB) {
   return newVector;
 }
 
-float[] vertorNorm(float[] vector) {
+float[] vertorNorm(float[] vector, float[]offsetOrigin) {
   println("vertorNorm input: "+vector[0]);
   float vectorLenght = sqrt(pow(vector[0], 2)+pow(vector[1], 2)+pow(vector[2], 2));
   println("vectorLenght: "+vectorLenght);
@@ -123,7 +127,7 @@ float[] vertorNorm(float[] vector) {
 
   //Normal Vector, 1/||V|| * [x,y,z]
   pushMatrix();
-  translate(P00[0], P00[1], P00[2] );
+  translate(offsetOrigin[0], offsetOrigin[1], offsetOrigin[2] );
   stroke(0, 0, 255);
   beginShape(LINES);
   vertex(0, 0, 0);
