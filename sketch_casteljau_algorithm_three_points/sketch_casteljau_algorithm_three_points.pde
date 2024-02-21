@@ -13,6 +13,9 @@ float[] bZero = {0, 0, 0};
 float[] bOne = {100, 100, 0};
 float[] bTwo = {0, 200, 0};
 float t, x, y;
+float[][] points = {{0, 0}, {0, 270}, {270, 270}, {270, 0}};
+float[][] pointsXPrime = new float[4][4];
+float[][] pointsYPrime = new float[4][4];
 
 void setup() {
   colorMode(HSB, 360, 100, 100);
@@ -20,28 +23,21 @@ void setup() {
   background(0, 0, 0);
   createCoordinatesSystem();
 
-  ellipse(bZero[0], bZero[1], 10, 10);
-  ellipse(bOne[0], bOne[1], 10, 10);
-  ellipse(bTwo[0], bTwo[1], 10, 10);
-
-  for (int i = 0; i < 10; i++) {
-    t = ((i+1) / 10.0);
-    x = (pow((1-t), 2)*bZero[0]) + (2*t*(1-t)*bOne[0]) + (pow(t, 2)*bTwo[0]);
-    y = (pow((1-t), 2)*bZero[1]) + (2*t*(1-t)*bOne[1]) + (pow(t, 2)*bTwo[1]);
-    println(i);
-    println("t: "+t+" x:"+x+" y:"+y);
-    ellipse(x, y, 5, 5);
+  for (int i = 0; i < points.length; i++) {
+    ellipse(points[i][0], points[i][1], 10, 10);
   }
+
+  casteljeaBezier(0.3, points);
 }
 
 void mousePressed() {
   background(0, 0, 0);
   createCoordinatesSystem();
-  //sampleTwo = globalMouseX();
-  //drawInterpolatedLine();
+  casteljeaParabola();
+}
+
+void casteljeaParabola() {
   ellipse(bZero[0], bZero[1], 10, 10);
-  
-  
   bOne[0] = globalMouseX();
   bOne[1] = globalMouseY();
   ellipse(bOne[0], bOne[1], 10, 10);
@@ -53,34 +49,49 @@ void mousePressed() {
     y = (pow((1-t), 2)*bZero[1]) + (2*t*(1-t)*bOne[1]) + (pow(t, 2)*bTwo[1]);
     println(i);
     println("t: "+t+" x:"+x+" y:"+y);
-    ellipse(x, y, 2,2);
+    ellipse(x, y, 2, 2);
   }
 }
 
-void casteljea(){
-  
+void casteljeaBezier(float t, float[][] points) {
 
+  int n = points.length;
+  float [][] bezierPoints = new float [n*n][2];
+  float[][] bezierXpoints = new float[n][n];
+  float[][] bezierYpoints = new float[n][n];
+
+  bezierXpoints[0][0] = points[0][0];
+  bezierXpoints[0][1] = points[1][0];
+  bezierXpoints[0][2] = points[2][0];
+  bezierXpoints[0][3] = points[3][0];
+
+  bezierYpoints[0][0] = points[0][1];
+  bezierYpoints[0][1] = points[1][1];
+  bezierYpoints[0][2] = points[2][1];
+  bezierYpoints[0][3] = points[3][1];
+
+  println(bezierXpoints[0][2], bezierYpoints[0][2]);
+  // r E [1, n]
+  // i E [0, n-1]
+  for (int r = 1; r < n; r++) {
+    for (int i = 0; i < (n-r); i++) {
+      int linearIndex = ((r-1)*n) + i;
+      bezierPoints[linearIndex][0]= ((1-t)*bezierXpoints[r-1][i]) + (t * bezierXpoints[r-1][i+1]);
+      bezierPoints[linearIndex][0]= 0;
+
+      bezierXpoints[r][i] = ((1-t)*bezierXpoints[r-1][i]) + (t * bezierXpoints[r-1][i+1]);
+      bezierYpoints[r][i] = ((1-t)*bezierYpoints[r-1][i]) + (t * bezierYpoints[r-1][i+1]);
+
+      fill(360, 100, 100);
+      ellipse(bezierXpoints[i][r], bezierYpoints[i][r], 5, 5);
+      println("r:"+r+" i:"+i+" - X:"+bezierXpoints[r-1][i]+" Y:"+bezierYpoints[r-1][i]);
+    }
+  }
 }
 
 void draw() {
-  background(0, 0, 0, .5);
-  createCoordinatesSystem();
-  ellipse(bZero[0], bZero[1], 10, 10);
-  
-  
-  bOne[0] = globalMouseX();
-  bOne[1] = globalMouseY();
-  ellipse(bOne[0], bOne[1], 10, 10);
-  ellipse(bTwo[0], bTwo[1], 10, 10);
-
-  for (int i = 0; i < 100; i++) {
-    t = ((i+1) / 100.0);
-    x = (pow((1-t), 2)*bZero[0]) + (2*t*(1-t)*bOne[0]) + (pow(t, 2)*bTwo[0]);
-    y = (pow((1-t), 2)*bZero[1]) + (2*t*(1-t)*bOne[1]) + (pow(t, 2)*bTwo[1]);
-    println(i);
-    println("t: "+t+" x:"+x+" y:"+y);
-    ellipse(x, y, 2,2);
-  }
+  //background(0, 0, 0, .5);
+  //createCoordinatesSystem();
 }
 
 void createCoordinatesSystem() {
