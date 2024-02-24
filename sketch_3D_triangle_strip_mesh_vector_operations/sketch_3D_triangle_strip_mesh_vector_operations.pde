@@ -9,15 +9,17 @@ float[] translationMatrix = {
 
 Tools tools = new Tools();
 UniformGrid pointsGrid;
+//float[] trianglesTable;
 int nx, ny = 0;
 int[] minPoint = {100, 10};//{100, 100};
-int[] maxPoint = {1200, 800}; //{400,400};
+int[] maxPoint = {1200, 400}; //{1200, 800};
 int triangleCounter = 0;
 void setup() {
   size(1280, 720, P3D);
-  nx = 32;
-  ny = 24;
+  nx = 6;//32;
+  ny = 3;//24;
   pointsGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
+  //trianglesTable = new float[(nx-1)*(ny-1)];
   basicSetUp();
   triangleMesh();
 }
@@ -32,6 +34,7 @@ void triangleMesh() {
         int b = floor(linearIndex/nx)*nx + ((linearIndex%nx)+1);//p10 l+1;
         int c = (floor(linearIndex/nx)+1)*nx + (linearIndex%nx); //p01 l+nx;
         int d = (floor(linearIndex/nx)+1)*nx + ((linearIndex%nx)+1);// p11 l+nx+1;
+
 
         float[][] vertices = new float[4][4];
         vertices[0] = pointsGrid.getSamplePosition(a);
@@ -56,7 +59,6 @@ void triangleMesh() {
 
         displayTriangle(trianglesTable[0], vertices);
         displayTriangle(trianglesTable[1], vertices);
-        ellipse(pointsGrid.getSamplePosition(i)[0], pointsGrid.getSamplePosition(i)[1], 10, 10);
         stroke(0, 0, 255);
         displayNormals(ABNorm, vertices[0]);
         displayNormals(DCNorm, vertices[3]);
@@ -66,8 +68,14 @@ void triangleMesh() {
   println("nx: "+nx+" ny:"+ny+" nx*ny:"+nx*ny+" *2: "+(nx*ny)*2);
   println("cells: "+(nx-1)*(ny-1)+" *2: "+(nx-1)*(ny-1)*2+" triangleCounter:"+ triangleCounter );
 
-  for (int i = 0; i < pointsGrid.getSize(); i++) {
-  }
+  /*for (int i = 0; i < pointsGrid.getSize(); i++) {
+   displayTriangle(trianglesTable[0], vertices);
+   displayTriangle(trianglesTable[1], vertices);
+   ellipse(pointsGrid.getSamplePosition(i)[0], pointsGrid.getSamplePosition(i)[1], 10, 10);
+   stroke(0, 0, 255);
+   displayNormals(ABNorm, vertices[0]);
+   displayNormals(DCNorm, vertices[3]);
+   }*/
 }
 
 //float[] pointTest = {0, 0, 0, 1};
@@ -94,7 +102,7 @@ void lines(float[] origin) {
 
 void displayNormals(float[] normalVector, float[] origin) {
   float xo, yo, zo, xn, yn, zn;
-  float scalarFactor = 100;
+  float scalarFactor = 50;
 
   xo = origin[0];
   yo = origin[1];
@@ -111,8 +119,8 @@ void displayNormals(float[] normalVector, float[] origin) {
 
 void basicSetUp() {
   background(0);
-  //ambientLight(10, 10, 10, 0, 0, 0);
-  //pointLight(255, 255, 255, width/2, -height, 0);
+  ambientLight(10, 10, 10, 0, 0, 0);
+  pointLight(255, 255, 255, width/2, -height, 0);
   pushMatrix();
   translate(width/2, height/2, -100);
   noStroke();

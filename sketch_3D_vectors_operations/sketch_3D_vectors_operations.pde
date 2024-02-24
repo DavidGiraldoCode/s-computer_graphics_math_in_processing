@@ -1,35 +1,50 @@
+import java.text.DecimalFormat;
 float[] P00, P10, P01, P11;
+float[] QOrigen; //2D Position of a chacter project over XZ plane.
+float[] vectorQ; //The origntation and position of the chacter.
 float[] vectorA, vectorB, vectorC, vectorD, crossBA, crossDC, ABNorm;
 
 void setup() {
   size(1280, 720, P3D);
   P00 = new float[4]; //Affine coordinates
   P00[0] = 200;
-  P00[1] = 600;
+  P00[1] = 650;
   P00[2] = -10;
   P00[3] = 1;
   P10 = new float[4]; //Affine coordinates
-  P10[0] = 400;
-  P10[1] = 600;
+  P10[0] = 600;
+  P10[1] = 650;
   P10[2] = -10;
   P10[3] = 1;
   P01 = new float[4]; //Affine coordinates
   P01[0] = 200;
-  P01[1] = 600;
-  P01[2] = -200;
+  P01[1] = 650;
+  P01[2] = -400;
   P01[3] = 1;
   P11 = new float[4]; //Affine coordinates
-  P11[0] = 400;
-  P11[1] = 600;
-  P11[2] = -200;
+  P11[0] = 600;
+  P11[1] = 400;
+  P11[2] = -400;
   P11[3] = 1;
+
+  QOrigen = new float[4]; //Affine coordinates
+  QOrigen[0] = 0;
+  QOrigen[1] = 650;
+  QOrigen[2] = 0;
+  QOrigen[3] = 1;
+
+  vectorQ = new float[4]; //Affine coordinates
+  vectorQ[0] = 0;
+  vectorQ[1] = -1;
+  vectorQ[2] = 0;
+  vectorQ[3] = 1;
 }
 
 void draw() {
   basicSetUp();
   //P11[0] = mouseX;
   //P11[1] = mouseY;
-  
+
   vectorA = vectorSubstraction(P10, P00);
   vectorB = vectorSubstraction(P01, P00);
   vectorC = vectorSubstraction(P01, P11);
@@ -42,6 +57,66 @@ void draw() {
 
   displayTriangle(P00, P10, P01);
   displayTriangle(P11, P01, P10);
+
+  chacterProjectRay();
+
+
+
+  stroke(255, 0, 0);
+  beginShape(LINES);
+  vertex(width-100, 600, -100);
+  vertex(width-100+(vectorQ[0]*100), (vectorQ[1]*100)+600, (vectorQ[2]*100)-100);
+  endShape();
+}
+
+void mousePressed() {
+
+
+  float area = determinant(P00, P10, P01);
+  float factor = 1/(2*area);
+
+  float det0 = determinant(QOrigen, P10, P01);
+  float det2 = determinant(P00, P10, QOrigen);
+  float det3 = determinant(P00, QOrigen, P01);
+
+  float U = factor*det0;
+  float V = factor*det2;
+  float W = factor*det3;
+
+  println("determinant(P00, P10, P10): "+area);
+  println("U:"+U+" V:"+V+" W:"+W+" U+V+W: "+(U+V+W));
+}
+
+float determinant(float[] A1, float[] A2, float[] A3) {
+  DecimalFormat numformat = new DecimalFormat("#.00");
+
+  float a11 = A1[0];
+  float a21 = A1[1];
+  float a31 = A1[2];
+
+  float a12 = A2[0];
+  float a22 = A2[1];
+  float a32 = A2[2];
+
+  float a13 = A3[0];
+  float a23 = A3[1];
+  float a33 = A3[2];
+
+  float det = (a11*a22*a33)+(a12*a23*a32)+(a31*a21*32)-(a11*a23*a32)-(a12*a21*a33)-(a13*a22*31);
+  //println("numformat: "+ numformat.format(det));
+  return det;
+}
+
+void chacterProjectRay() {
+  QOrigen[0] = mouseX;
+  QOrigen[1] = 650;
+  QOrigen[2] = mouseY*-1;
+
+  stroke(255, 0, 0);
+  beginShape(LINES);
+  vertex(QOrigen[0], QOrigen[1], QOrigen[2]);
+  vertex(QOrigen[0], QOrigen[1]-height, QOrigen[2]);
+  endShape();
 }
 
 void displayTriangle(float[] A, float[] B, float[] C) {
@@ -113,18 +188,18 @@ float[] crossProduct(float[] vA, float[] vB) {
 }
 
 float[] vertorNorm(float[] vector, float[]offsetOrigin) {
-  println("vertorNorm input: "+vector[0]);
+  //println("vertorNorm input: "+vector[0]);
   float vectorLenght = sqrt(pow(vector[0], 2)+pow(vector[1], 2)+pow(vector[2], 2));
-  println("vectorLenght: "+vectorLenght);
+  //println("vectorLenght: "+vectorLenght);
 
 
   float xn = vector[0]/vectorLenght;
   float yn = vector[1]/vectorLenght;
   float zn = vector[2]/vectorLenght;
-  println("xn: "+xn);
-  println("yn: "+yn);
-  println("zn: "+zn);
-  println("xn + yn + zn = "+ (xn+yn+zn));
+  //println("xn: "+xn);
+  //println("yn: "+yn);
+  //println("zn: "+zn);
+  //println("xn + yn + zn = "+ (xn+yn+zn));
 
   //Normal Vector, 1/||V|| * [x,y,z]
   pushMatrix();
@@ -142,7 +217,7 @@ float[] vertorNorm(float[] vector, float[]offsetOrigin) {
 
 void basicSetUp() {
   background(0);
-  ambientLight(10, 10, 10, 0, 0, 0);
+  //ambientLight(90, 90, 90, 0, 0, 0);
   pointLight(255, 255, 255, width/2, -height, 0);
   pushMatrix();
   translate(width/2, height/2, -100);

@@ -2,8 +2,8 @@ public class UniformGrid {
   //2D [x,y] [colunms, rows]
   private int nx, ny, nCols, nRows, dx, dy;
   //private int[] minPoint, maxPoint;
-  private float[][] samplePoints;
-  private float[] sampleValues;
+  private float[][] samplePoints;//holds 3D coordinates in space
+  private float[] sampleValues;//holds an scalar value
 
   public UniformGrid(int nx, int ny, int[] minPoint, int[] maxPoint) {
     this.nx = nx;
@@ -33,7 +33,7 @@ public class UniformGrid {
 
         samplePoints[linearIndex][0] = (x*dx) + xMin;
         //if (ny > 1) {
-        samplePoints[linearIndex][1] = 600;//(y*dy) + yMin;//((y*dy) + yMin)*-1;
+        samplePoints[linearIndex][1] = 600 + random(-20,20);//(y*dy) + yMin;//((y*dy) + yMin)*-1;
         //} else {
         //  samplePoints[linearIndex][1] = yMin;
         //}
@@ -76,5 +76,8 @@ public class UniformGrid {
   }
   public void setSampleValue(int linearIndex, float newValue) {
     sampleValues[linearIndex] = newValue;
+  }
+  public void setSamplePosition(int linearIndex, float[] newValue) {
+    samplePoints[linearIndex] = newValue;
   }
 }
