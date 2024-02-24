@@ -29,6 +29,7 @@ void draw() {
   basicSetUp();
   P11[0] = mouseX;
   P11[1] = mouseY;
+  
   vectorA = vectorSubstraction(P10, P00);
   vectorB = vectorSubstraction(P01, P00);
   vectorC = vectorSubstraction(P01, P11);

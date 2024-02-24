@@ -10,6 +10,12 @@ int nx, ny;
 int[][] uniformGrid;
 
 int[][] pointsCloud;
+/*
+4 pointa to render using 4 colors
+ Given a linear index L = 0, get to the 4 points at once with offsets
+ */
+int[][] points = {{0, 0}, {100, 0}, {0, 100}, {100, 100}};// P00, P10, P01, P11;
+int l = 0;
 
 void setup() {
   //noCursor();
@@ -56,9 +62,34 @@ void setup() {
   for (int i =0; i < uniformGrid.length; i++) {
     point(uniformGrid[i][0], uniformGrid[i][1]);
   }
+
+  linearIndexOffsetting();
 }
 
 void draw() {
+}
+
+void linearIndexOffsetting() {
+
+  int nx = 2;
+
+  int p00 = l;
+  int p10 = floor(l/nx)*nx + ((l%nx)+1);//l+1;
+  int p01 = (floor(l/nx)+1)*nx + (l%nx); //l+nx;
+  int p11 = (floor(l/nx)+1)*nx + ((l%nx)+1);//l+nx+1;
+
+  noStroke();
+  fill(0);
+  ellipse(points[p00][0], points[p00][1], 10, 10);
+
+  fill(255, 0, 0);
+  ellipse(points[p10][0], points[p10][1], 10, 10);
+
+  fill(0, 255, 0);
+  ellipse(points[p01][0], points[p01][1], 10, 10);
+
+  fill(0, 0, 255);
+  ellipse(points[p11][0], points[p11][1], 10, 10);
 }
 
 void createCoordinatesSystem() {
