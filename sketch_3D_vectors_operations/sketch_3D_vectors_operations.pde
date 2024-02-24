@@ -4,31 +4,31 @@ float[] vectorA, vectorB, vectorC, vectorD, crossBA, crossDC, ABNorm;
 void setup() {
   size(1280, 720, P3D);
   P00 = new float[4]; //Affine coordinates
-  P00[0] = 100;
-  P00[1] = 500;
-  P00[2] = 0;
+  P00[0] = 200;
+  P00[1] = 600;
+  P00[2] = -10;
   P00[3] = 1;
   P10 = new float[4]; //Affine coordinates
-  P10[0] = 300;
+  P10[0] = 400;
   P10[1] = 600;
-  P10[2] = 10;
+  P10[2] = -10;
   P10[3] = 1;
   P01 = new float[4]; //Affine coordinates
-  P01[0] = 280;
-  P01[1] = 400;
+  P01[0] = 200;
+  P01[1] = 600;
   P01[2] = -200;
   P01[3] = 1;
   P11 = new float[4]; //Affine coordinates
-  P11[0] = 600;
+  P11[0] = 400;
   P11[1] = 600;
-  P11[2] = 0;
+  P11[2] = -200;
   P11[3] = 1;
 }
 
 void draw() {
   basicSetUp();
-  P11[0] = mouseX;
-  P11[1] = mouseY;
+  //P11[0] = mouseX;
+  //P11[1] = mouseY;
   
   vectorA = vectorSubstraction(P10, P00);
   vectorB = vectorSubstraction(P01, P00);

@@ -34,11 +34,12 @@ public class Tools {
       newVector[0] += vector[(i%size)]*matrix[(i%size)];
       newVector[1] += vector[(i%size)]*matrix[(i%size)+size];
       newVector[2] += vector[(i%size)]*matrix[(i%size)+(size*2)];
-      newVector[3] += vector[(i%size)]*matrix[(i%size)+(size*3)];
+      
       //println();
       //y*nx + x
       //Math.floor(i/3)
     }
+    newVector[3] = 1;
     return newVector;
   }
 
@@ -63,7 +64,7 @@ public class Tools {
     return newVector;
   }
 
-  float[] vertorNorm(float[] vector, float[]offsetOrigin) {
+  float[] vertorNorm(float[] vector) {
     //offsetOrigin is used to move the normal vecotr from [0,0] to the tip of the position vectors
     float vectorLenght = sqrt(pow(vector[0], 2)+pow(vector[1], 2)+pow(vector[2], 2));
 

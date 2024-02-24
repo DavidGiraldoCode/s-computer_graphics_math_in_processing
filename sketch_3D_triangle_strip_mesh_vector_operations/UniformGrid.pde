@@ -33,11 +33,11 @@ public class UniformGrid {
 
         samplePoints[linearIndex][0] = (x*dx) + xMin;
         //if (ny > 1) {
-        samplePoints[linearIndex][1] = (y*dy) + yMin;
+        samplePoints[linearIndex][1] = 600;//(y*dy) + yMin;//((y*dy) + yMin)*-1;
         //} else {
         //  samplePoints[linearIndex][1] = yMin;
         //}
-        samplePoints[linearIndex][2] = 0;
+        samplePoints[linearIndex][2] = ((y*dy) + yMin)*-1;
         samplePoints[linearIndex][3] = 1;
 
         sampleValues[linearIndex] = 0;
