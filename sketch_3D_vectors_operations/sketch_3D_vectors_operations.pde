@@ -91,11 +91,42 @@ void draw() {
   I = intersectionPoint(P);
   displayInterseption(I);
 
+  P[0] = mouseX;
+  P[1] = mouseY;
+  P[2] = -100;
+  P[3] = 1;
+
+
+
   stroke(255, 0, 0);
   beginShape(LINES);
   vertex(width-100, 600, -100);
   vertex(width-100+(vectorQ[0]*100), (vectorQ[1]*100)+600, (vectorQ[2]*100)-100);
   endShape();
+
+  float[] I = computeIntersectionOntoPlane(P00, vertorNorm(crossBA, P00), P);
+
+  pushMatrix();
+  translate(I[0], I[1], I[2]);
+  fill(0, 255, 0);
+  sphere(5);
+  popMatrix();
+}
+
+float[] computeIntersectionOntoPlane(float[] knownPointOnPlane, float[] normalOnPLane, float[] rayVector) {
+
+  float A = normalOnPLane[0]*knownPointOnPlane[0] + normalOnPLane[1]*knownPointOnPlane[1] + normalOnPLane[2]*knownPointOnPlane[2];
+  float B = normalOnPLane[0]*rayVector[0] + normalOnPLane[1]*rayVector[1] + normalOnPLane[2]*rayVector[2];
+  float t = A/B;
+
+  float[] I = new float[4];
+
+  println(t);
+  I[0] = rayVector[0] * t;
+  I[1] = rayVector[1] * t;
+  I[2] = rayVector[2] * t;
+
+  return I;
 }
 
 void displaySegment(float[] A, float[] B) {
@@ -194,7 +225,7 @@ void chacterProjectRay() {
 
 void displayTriangle(float[] A, float[] B, float[] C) {
   noStroke();
-  fill(255);
+  fill(200);
   beginShape(TRIANGLES);
   vertex(A[0], A[1], A[2]);
   vertex(B[0], B[1], B[2]);
@@ -290,8 +321,8 @@ float[] vertorNorm(float[] vector, float[]offsetOrigin) {
 
 void basicSetUp() {
   background(0);
-  //ambientLight(90, 90, 90, 0, 0, 0);
-  //pointLight(255, 255, 255, width/2, -height, 0);
+  ambientLight(90, 90, 90, 0, 0, 0);
+  pointLight(255, 255, 255, width/2, -height, 0);
   pushMatrix();
   translate(width/2, height/2, -100);
   noStroke();
