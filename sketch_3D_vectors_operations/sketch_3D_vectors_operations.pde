@@ -15,12 +15,12 @@ void setup() {
   P00[3] = 1;
   P10 = new float[4]; //Affine coordinates
   P10[0] = 600;
-  P10[1] = 650;
+  P10[1] = 600;
   P10[2] = -10;
   P10[3] = 1;
   P01 = new float[4]; //Affine coordinates
   P01[0] = 200;
-  P01[1] = 650;
+  P01[1] = 500;
   P01[2] = -400;
   P01[3] = 1;
   P11 = new float[4]; //Affine coordinates
@@ -82,9 +82,9 @@ void draw() {
   vertorNorm(crossDC, P11);
 
   displayTriangle(P00, P10, P01);
-  displayTriangle(P11, P01, P10);
+  //displayTriangle(P11, P01, P10);
 
-  chacterProjectRay();
+
 
   displaySegment(A, B);
   displayRay(C, P);
@@ -92,9 +92,10 @@ void draw() {
   displayInterseption(I);
 
   P[0] = mouseX;
-  P[1] = mouseY;
-  P[2] = -100;
+  P[1] = height;
+  P[2] = mouseY*-1;
   P[3] = 1;
+
 
 
 
@@ -105,12 +106,30 @@ void draw() {
   endShape();
 
   float[] I = computeIntersectionOntoPlane(P00, vertorNorm(crossBA, P00), P);
+  chacterProjectRay(I[0], I[2]);
 
-  pushMatrix();
-  translate(I[0], I[1], I[2]);
-  fill(0, 255, 0);
-  sphere(5);
-  popMatrix();
+  float area = determinant(P00, vectorA, vectorB)/2;
+  float factor = 1/(2*area);
+
+  float det0 = determinant(I, vectorA, vectorB);
+  float det1 = determinant(P00, I, vectorB);
+  float det2 = determinant(P00, vectorA, I);
+
+  float U = factor*det0;
+  float V = factor*det1;
+  //float W = 1-U-V;
+  float W = factor*det2;
+
+  println("determinant(P00, P10, P10): "+area);
+  println("U:"+U+" V:"+V+" W:"+W+" U+V+W: "+(U+V+W));
+
+  if ((U+V+W) > 0.1 && (U+V+W) < 0.99) {
+    pushMatrix();
+    translate(I[0], I[1], I[2]);
+    fill(0, 255, 0);
+    sphere(5);
+    popMatrix();
+  }
 }
 
 float[] computeIntersectionOntoPlane(float[] knownPointOnPlane, float[] normalOnPLane, float[] rayVector) {
@@ -211,10 +230,10 @@ float determinant(float[] A1, float[] A2, float[] A3) {
   return det;
 }
 
-void chacterProjectRay() {
-  QOrigen[0] = mouseX;
+void chacterProjectRay(float x, float z) {
+  QOrigen[0] = x;
   QOrigen[1] = 650;
-  QOrigen[2] = mouseY*-1;
+  QOrigen[2] = z;
 
   stroke(255, 0, 0);
   beginShape(LINES);
@@ -240,7 +259,7 @@ float[] vectorSubstraction(float[] P1, float[] P0) {
   float Ay = P1[1] - P0[1]; // Y1 - Y0
   float Az = P1[2] - P0[2]; // Z1 - Z0
 
-  //Render
+  /*/Render
   stroke(50);
   //Vector of point P0
   beginShape(LINES);
@@ -263,7 +282,7 @@ float[] vectorSubstraction(float[] P1, float[] P0) {
   vertex(0, 0, 0);
   vertex(Ax, Ay, Az);
   endShape();
-  popMatrix();
+  popMatrix();*/
 
   float[] newVector = {Ax, Ay, Az, 0};
   return newVector;

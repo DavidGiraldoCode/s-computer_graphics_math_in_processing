@@ -11,13 +11,17 @@ Tools tools = new Tools();
 UniformGrid pointsGrid;
 //float[] trianglesTable;
 int nx, ny = 0;
-int[] minPoint = {100, 10};//{100, 100};
-int[] maxPoint = {1200, 400}; //{1200, 800};
+int[] minPoint = {50, 0};//{100, 100};
+int[] maxPoint = {1240, 800}; //{1200, 800};
 int triangleCounter = 0;
+
+//Move Sphere
+int location = 24;
+
 void setup() {
   size(1280, 720, P3D);
-  nx = 6;//32;
-  ny = 3;//24;
+  nx = 32;//32;
+  ny = 24;//24;
   pointsGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
   //trianglesTable = new float[(nx-1)*(ny-1)];
   basicSetUp();
@@ -76,11 +80,57 @@ void triangleMesh() {
    displayNormals(ABNorm, vertices[0]);
    displayNormals(DCNorm, vertices[3]);
    }*/
+
+  float x = pointsGrid.getSamplePosition(location)[0];
+  float y = pointsGrid.getSamplePosition(location)[1];
+  float z = pointsGrid.getSamplePosition(location)[2];
+  noStroke();
+  fill(255);
+  pushMatrix();
+  translate(x, y-10, z);
+  sphereDetail(4);
+  sphere(25);
+  popMatrix();
 }
 
 //float[] pointTest = {0, 0, 0, 1};
 void draw() {
+  basicSetUp();
+  triangleMesh();
 }
+
+void keyPressed() {
+  //int linearIndex = (y*nx)+x;
+  
+  int x = location%nx;
+  int z = floor(location/nx);
+
+  switch(keyCode) {
+  case UP:
+    z++;
+    break;
+  case DOWN:
+    z--;
+    break;
+  case RIGHT:
+    x++;
+    break;
+  case LEFT:
+    x--;
+    break;
+  }
+  location = (z*nx)+x;
+  /*float[] spherePos = pointsGrid.getSamplePosition(location);
+  noStroke();
+  fill(255);
+  pushMatrix();
+  translate(spherePos[0], spherePos[1], spherePos[2]);
+  sphereDetail(4);
+  sphere(20);
+  popMatrix();*/
+}
+
+
 
 void displayTriangle(int[] triangleIndexs, float[][] vertices) {
   stroke(0);
@@ -102,7 +152,7 @@ void lines(float[] origin) {
 
 void displayNormals(float[] normalVector, float[] origin) {
   float xo, yo, zo, xn, yn, zn;
-  float scalarFactor = 50;
+  float scalarFactor = 20;
 
   xo = origin[0];
   yo = origin[1];

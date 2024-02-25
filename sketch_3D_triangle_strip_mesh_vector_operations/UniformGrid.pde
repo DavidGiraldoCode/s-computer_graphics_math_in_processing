@@ -1,4 +1,4 @@
-public class UniformGrid { 
+public class UniformGrid {
   //2D [x,y] [colunms, rows]
   private int nx, ny, nCols, nRows, dx, dy;
   //private int[] minPoint, maxPoint;
@@ -26,6 +26,11 @@ public class UniformGrid {
       dy = (yMax - yMin) / nRows; // Cell's height
     }
 
+    float offSet = 0;
+    float sample = 0;
+    float scalar = 20;
+    float minium = 10;
+
     for (int y = 0; y < ny; y++) {
       for (int x = 0; x < nx; x++) {
 
@@ -33,7 +38,12 @@ public class UniformGrid {
 
         samplePoints[linearIndex][0] = (x*dx) + xMin;
         //if (ny > 1) {
-        samplePoints[linearIndex][1] = 600 + random(-20,20);//(y*dy) + yMin;//((y*dy) + yMin)*-1;
+
+        sample = ((cos((linearIndex * 0.01) - offSet) * scalar ));
+        samplePoints[linearIndex][1] = 600 + sample;//(y*dy) + yMin;//((y*dy) + yMin)*-1;
+        
+        //samplePoints[linearIndex][1] = 600 + random(-50, 50);//(y*dy) + yMin;//((y*dy) + yMin)*-1;
+        offSet = (linearIndex*( PI/4 ));
         //} else {
         //  samplePoints[linearIndex][1] = yMin;
         //}
@@ -42,8 +52,8 @@ public class UniformGrid {
 
         sampleValues[linearIndex] = 0;
         /*println("uniformGrid["+((y*nx)+x)+"][0] = "+((x*dx) + xMin));
-        println("uniformGrid["+((y*nx)+x)+"][1] = "+((y*dy) + yMin));
-        println("-----------------");*/
+         println("uniformGrid["+((y*nx)+x)+"][1] = "+((y*dy) + yMin));
+         println("-----------------");*/
       }
     }
   }
@@ -65,12 +75,12 @@ public class UniformGrid {
     int linearIndex = (point[1]*nx)+point[0];
     return sampleValues[linearIndex];
   }
-  
+
   public float getSampleValue(int linearIndex) {
     //int linearIndex = (point[1]*nx)+point[0];
     return sampleValues[linearIndex];
   }
-  
+
   public int getSize() {
     return sampleValues.length;
   }
