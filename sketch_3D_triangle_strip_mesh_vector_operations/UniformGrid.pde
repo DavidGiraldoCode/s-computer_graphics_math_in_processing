@@ -41,7 +41,7 @@ public class UniformGrid {
 
         sample = ((cos((linearIndex * 0.01) - offSet) * scalar ));
         samplePoints[linearIndex][1] = 600 + sample;//(y*dy) + yMin;//((y*dy) + yMin)*-1;
-        
+
         //samplePoints[linearIndex][1] = 600 + random(-50, 50);//(y*dy) + yMin;//((y*dy) + yMin)*-1;
         offSet = (linearIndex*( PI/4 ));
         //} else {
@@ -89,5 +89,9 @@ public class UniformGrid {
   }
   public void setSamplePosition(int linearIndex, float[] newValue) {
     samplePoints[linearIndex] = newValue;
+  }
+
+  public void setYSamplePosition(int linearIndex, float newValue) {
+    samplePoints[linearIndex][1] = newValue;
   }
 }
