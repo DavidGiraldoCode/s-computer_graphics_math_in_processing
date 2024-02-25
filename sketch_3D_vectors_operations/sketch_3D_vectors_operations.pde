@@ -4,6 +4,8 @@ float[] QOrigen; //2D Position of a chacter project over XZ plane.
 float[] vectorQ; //The origntation and position of the chacter.
 float[] vectorA, vectorB, vectorC, vectorD, crossBA, crossDC, ABNorm;
 
+float[] A, B, C, P, I;
+
 void setup() {
   size(1280, 720, P3D);
   P00 = new float[4]; //Affine coordinates
@@ -38,6 +40,30 @@ void setup() {
   vectorQ[1] = -1;
   vectorQ[2] = 0;
   vectorQ[3] = 1;
+
+  A = new float[4]; //Affine coordinates
+  A[0] = 100;
+  A[1] = 100;
+  A[2] = 0;
+  A[3] = 1;
+
+  B = new float[4]; //Affine coordinates
+  B[0] = 130;
+  B[1] = 10;
+  B[2] = 0;
+  B[3] = 1;
+
+  C = new float[4]; //Affine coordinates
+  C[0] = 0;
+  C[1] = 0;
+  C[2] = 0;
+  C[3] = 1;
+
+  P = new float[4]; //Affine coordinates
+  P[0] = 30;
+  P[1] = 10;
+  P[2] = 0;
+  P[3] = 1;
 }
 
 void draw() {
@@ -60,13 +86,60 @@ void draw() {
 
   chacterProjectRay();
 
-
+  displaySegment(A, B);
+  displayRay(C, P);
+  I = intersectionPoint(P);
+  displayInterseption(I);
 
   stroke(255, 0, 0);
   beginShape(LINES);
   vertex(width-100, 600, -100);
   vertex(width-100+(vectorQ[0]*100), (vectorQ[1]*100)+600, (vectorQ[2]*100)-100);
   endShape();
+}
+
+void displaySegment(float[] A, float[] B) {
+  stroke(255, 255, 0);
+  beginShape(LINES);
+  vertex(A[0], A[1], A[2]);
+  vertex(B[0], B[1], B[2]);
+  endShape();
+}
+
+void displayRay(float[] origin, float[] tip) {
+  int scalar = 10;
+  stroke(255);
+  beginShape(LINES);
+  vertex(origin[0], origin[1], origin[2]);
+  vertex(tip[0]*scalar, tip[1]*scalar, tip[2]*scalar);
+  endShape();
+}
+
+void displayInterseption(float[] location) {
+  pushMatrix();
+  noStroke();
+  fill(255, 0, 0);
+  translate(location[0], location[1], location[2]);
+  sphere(5);
+  popMatrix();
+}
+
+float[] intersectionPoint(float[] rayVector) {
+  float[] I = new float[4];
+  /*
+  P is the tip of the rayVector
+   
+   Ix = (1-t)* Cx + t*Px
+   Iy = (1-t)* Cy + t*Py
+   
+   Iy = m*Ix + b
+   
+   */
+  float t = 4;
+  I[0] = t*rayVector[0];
+  I[1] = t*rayVector[1];
+
+  return I;
 }
 
 void mousePressed() {
@@ -137,7 +210,7 @@ float[] vectorSubstraction(float[] P1, float[] P0) {
   float Az = P1[2] - P0[2]; // Z1 - Z0
 
   //Render
-  stroke(255);
+  stroke(50);
   //Vector of point P0
   beginShape(LINES);
   vertex(0, 0, 0);
@@ -218,7 +291,7 @@ float[] vertorNorm(float[] vector, float[]offsetOrigin) {
 void basicSetUp() {
   background(0);
   //ambientLight(90, 90, 90, 0, 0, 0);
-  pointLight(255, 255, 255, width/2, -height, 0);
+  //pointLight(255, 255, 255, width/2, -height, 0);
   pushMatrix();
   translate(width/2, height/2, -100);
   noStroke();
