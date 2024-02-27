@@ -34,7 +34,7 @@ public class Tools {
       newVector[0] += vector[(i%size)]*matrix[(i%size)];
       newVector[1] += vector[(i%size)]*matrix[(i%size)+size];
       newVector[2] += vector[(i%size)]*matrix[(i%size)+(size*2)];
-      
+
       //println();
       //y*nx + x
       //Math.floor(i/3)
@@ -50,7 +50,7 @@ public class Tools {
     float Ay = P1[1] - P0[1]; // Y1 - Y0
     float Az = P1[2] - P0[2]; // Z1 - Z0
 
-    float[] newVector = {Ax, Ay, Az, 0}; //Affine coordinates
+    float[] newVector = {Ax, Ay, Az, 1}; //Affine coordinates
     return newVector;
   }
 
@@ -60,7 +60,7 @@ public class Tools {
     float y = vA[2]*vB[0] - vA[0]*vB[2];
     float z = vA[0]*vB[1] - vA[1]*vB[0];
 
-    float[] newVector = {x, y, z, 0};
+    float[] newVector = {x, y, z, 1};
     return newVector;
   }
 
@@ -74,5 +74,17 @@ public class Tools {
 
     float[] normalizedVector = {xn, yn, zn, 1};// Affine coordinates
     return normalizedVector;
+  }
+
+  float[] findTriangleBarycenter(float[] A, float[] B, float[] C) {
+    float[] newVector = new float[4];
+    float weight = 0.33;
+
+    newVector[0] = (weight*A[0]) + (weight*B[0]) + (weight*C[0]);
+    newVector[1] = (weight*A[1]) + (weight*B[1]) + (weight*C[1]);
+    newVector[2] = (weight*A[2]) + (weight*B[2]) + (weight*C[2]);
+    newVector[3]=1;
+
+    return newVector;
   }
 }

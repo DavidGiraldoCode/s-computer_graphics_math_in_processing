@@ -71,25 +71,28 @@ void draw() {
   //P11[0] = mouseX;
   //P11[1] = mouseY;
 
+  P10[0] = mouseX;
+  P10[1] = mouseY;
+  
   vectorA = vectorSubstraction(P10, P00);
   vectorB = vectorSubstraction(P01, P00);
-  vectorC = vectorSubstraction(P01, P11);
-  vectorD = vectorSubstraction(P10, P11);
+  //vectorC = vectorSubstraction(P01, P11);
+  //vectorD = vectorSubstraction(P10, P11);
 
   crossBA = crossProduct(vectorB, vectorA);
-  crossDC = crossProduct(vectorD, vectorC);
+  //crossDC = crossProduct(vectorD, vectorC);
   vertorNorm(crossBA, P00);
-  vertorNorm(crossDC, P11);
+  //vertorNorm(crossDC, P11);
 
   displayTriangle(P00, P10, P01);
   //displayTriangle(P11, P01, P10);
 
 
 
-  displaySegment(A, B);
-  displayRay(C, P);
+  //displaySegment(A, B);
+  //displayRay(C, P);
   I = intersectionPoint(P);
-  displayInterseption(I);
+  //displayInterseption(I);
 
   P[0] = mouseX;
   P[1] = height;
@@ -99,14 +102,14 @@ void draw() {
 
 
 
-  stroke(255, 0, 0);
-  beginShape(LINES);
-  vertex(width-100, 600, -100);
-  vertex(width-100+(vectorQ[0]*100), (vectorQ[1]*100)+600, (vectorQ[2]*100)-100);
-  endShape();
+  //stroke(255, 0, 0);
+  //beginShape(LINES);
+  //vertex(width-100, 600, -100);
+  //vertex(width-100+(vectorQ[0]*100), (vectorQ[1]*100)+600, (vectorQ[2]*100)-100);
+  //endShape();
 
   float[] I = computeIntersectionOntoPlane(P00, vertorNorm(crossBA, P00), P);
-  chacterProjectRay(I[0], I[2]);
+  //chacterProjectRay(I[0], I[2]);
 
   float area = determinant(P00, vectorA, vectorB)/2;
   float factor = 1/(2*area);
@@ -131,22 +134,22 @@ void draw() {
     popMatrix();
   }
 
-  
+
 
   baricenter[0] = (0.33*P00[0]) + (0.33*P10[0]) + (0.33*P01[0]);
   baricenter[1] = (0.33*P00[1]) + (0.33*P10[1]) + (0.33*P01[1]);
   baricenter[2] = (0.33*P00[2]) + (0.33*P10[2]) + (0.33*P01[2]);
   baricenter[3] = 1;
-  
+
   println(baricenter);
-  
+
   /*noStroke();
-  fill(0,0,255);
-  pushMatrix();
-  translate(baricenter[0], baricenter[1], baricenter[2]);
-  fill(0, 255, 0);
-  sphere(50);
-  popMatrix();*/
+   fill(0,0,255);
+   pushMatrix();
+   translate(baricenter[0], baricenter[1], baricenter[2]);
+   fill(0, 255, 0);
+   sphere(50);
+   popMatrix();*/
   vertorNorm(crossBA, baricenter);
 }
 
@@ -277,7 +280,7 @@ float[] vectorSubstraction(float[] P1, float[] P0) {
   float Ay = P1[1] - P0[1]; // Y1 - Y0
   float Az = P1[2] - P0[2]; // Z1 - Z0
 
-  /*/Render
+  //Render
    stroke(50);
    //Vector of point P0
    beginShape(LINES);
@@ -300,7 +303,7 @@ float[] vectorSubstraction(float[] P1, float[] P0) {
    vertex(0, 0, 0);
    vertex(Ax, Ay, Az);
    endShape();
-   popMatrix();*/
+   popMatrix();//*/
 
   float[] newVector = {Ax, Ay, Az, 0};
   return newVector;

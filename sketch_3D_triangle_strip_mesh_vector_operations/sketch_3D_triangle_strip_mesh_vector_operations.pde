@@ -11,8 +11,8 @@ Tools tools = new Tools();
 UniformGrid pointsGrid;
 //float[] trianglesTable;
 int nx, ny = 0;
-int[] minPoint = {50, -400};//{100, 100};
-int[] maxPoint = {1240, 1240}; //{1200, 800};
+int[] minPoint;//= {100, 100};//{50, -400};
+int[] maxPoint; //= {600, 600}; //{1240, 1240};
 int triangleCounter = 0;
 
 //Move Sphere
@@ -20,24 +20,49 @@ int location;
 float[] normalAtLocation = new float[4];
 PShape ship;
 
+int scene = 0;
+boolean doSampling = false;
+boolean showStrokes = true;
+
 void setup() {
+  minPoint = new int[2];
+  maxPoint = new int[2];
   //"19292_Cat_boat_v1.obj"
   //"19291_Cabin_cruise_v2_NEW.obj"
   //"15211_Wakeboard_v1_NEW.obj"
-  ship = loadShape("19291_Cabin_cruise_v2_NEW.obj");
+  //ship = loadShape("19291_Cabin_cruise_v2_NEW.obj");
   size(1280, 720, P3D);
-  nx = 16;//32;
-  ny = 16;//24;
+  switch(scene) {
+  case 0:
+    nx = 2;//32;
+    ny = 2;//24;
+    minPoint[0]=100;
+    minPoint[1]=100;
+
+    maxPoint[0]=800;
+    maxPoint[1]=600;
+
+    break;
+  case 1:
+    showStrokes = false;
+    break;
+  case 2:
+    break;
+  case 3:
+    break;
+  }
+
   location = ((ny/2)*nx)+(nx/2);
   pointsGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
   //trianglesTable = new float[(nx-1)*(ny-1)];
   basicSetUp();
   triangleMesh();
 }
+
 float change = 0;
 float offSet = 0;
 float sample = 0;
-float scalar = 80;
+float scalar = 20;
 float minium = 10;
 float[] matrix = {
   1, 0, 0, 1,
@@ -104,6 +129,8 @@ void triangleMesh() {
 
         crossBA = tools.crossProduct(vectorB, vectorA);
         crossDC = tools.crossProduct(vectorD, vectorC);
+        //crossBA = tools.crossProduct(vectorA, vectorB);
+        //crossDC = tools.crossProduct(vectorC, vectorD);
 
         ABNorm = tools.vertorNorm(crossBA);
         if (linearIndex == location) {
@@ -115,13 +142,8 @@ void triangleMesh() {
         displayTriangle(trianglesTable[1], vertices);
         stroke(0, 0, 255);
 
-        baricenterOne[0] = (0.33*vertices[0][0]) + (0.33*vertices[1][0]) + (0.33*vertices[2][0]);
-        baricenterOne[1] = (0.33*vertices[0][1]) + (0.33*vertices[1][1]) + (0.33*vertices[2][1]);
-        baricenterOne[2] = (0.33*vertices[0][2]) + (0.33*vertices[1][2]) + (0.33*vertices[2][2]);
-
-        baricenterTwo[0] = (0.33*vertices[3][0]) + (0.33*vertices[2][0]) + (0.33*vertices[1][0]);
-        baricenterTwo[1] = (0.33*vertices[3][1]) + (0.33*vertices[2][1]) + (0.33*vertices[1][1]);
-        baricenterTwo[2] = (0.33*vertices[3][2]) + (0.33*vertices[2][2]) + (0.33*vertices[1][2]);
+        baricenterOne = tools.findTriangleBarycenter(vertices[0], vertices[1], vertices[2]);
+        baricenterTwo = tools.findTriangleBarycenter(vertices[3], vertices[2], vertices[1]);
 
         displayNormals(ABNorm, baricenterOne);
         displayNormals(DCNorm, baricenterTwo);
@@ -144,29 +166,34 @@ void triangleMesh() {
   float y = pointsGrid.getSamplePosition(location)[1];
   float z = pointsGrid.getSamplePosition(location)[2];
 
+  /*
   noStroke();
-  fill(255);
-  pushMatrix();
-  translate(x+50, y+50, z);
-  //rotateY(PI*(mouseX * 0.001));
-  rotateZ((PI/6)+((normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2])*0.5));
-  //rotateY(PI);
-  rotateY(PI*(mouseX * 0.001));
-  rotateX(PI/2);
-  //rotateX((normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2]));
-  //rotateZ((PI/2));
-  sphereDetail(4);
-  sphere(25);
-  scale(0.4);
-  shape(ship, 0, 0);
-  popMatrix();
+   fill(255);
+   pushMatrix();
+   translate(x+50, y+50, z);
+   //rotateY(PI*(mouseX * 0.001));
+   rotateZ((PI/6)+((normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2])*0.5));
+   //rotateY(PI);
+   rotateY(PI*(mouseX * 0.001));
+   rotateX(PI/2);
+   //rotateX((normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2]));
+   //rotateZ((PI/2));
+   sphereDetail(4);
+   sphere(25);
+   scale(0.4);
+   //shape(ship, 0, 0);
+   popMatrix();*/
 }
 
 //float[] pointTest = {0, 0, 0, 1};
 void draw() {
-  basicSetUp();
-  samplingMesh();
-  triangleMesh();
+  if (scene > 2) {
+    basicSetUp();
+    if (doSampling) {
+      samplingMesh();
+    }
+    triangleMesh();
+  }
 }
 
 void keyPressed() {
@@ -204,7 +231,11 @@ void keyPressed() {
 
 void displayTriangle(int[] triangleIndexs, float[][] vertices) {
   //stroke(0);
-  noStroke();
+  if (showStrokes) {
+    stroke(0);
+  } else {
+    noStroke();
+  }
   fill(0, 100, 200);
   beginShape(TRIANGLES);
   vertex(vertices[triangleIndexs[0]][0], vertices[triangleIndexs[0]][1], vertices[triangleIndexs[0]][2]);
@@ -240,8 +271,8 @@ void displayNormals(float[] normalVector, float[] origin) {
 
 void basicSetUp() {
   background(255);
-  ambientLight(200, 200, 200, 0, 0, 0);
-  pointLight(255, 255, 255, width/2, -height, 0);
+  //ambientLight(200, 200, 200, 0, 0, 0);
+  //pointLight(255, 255, 255, width/2, -height, 0);
   pushMatrix();
   translate(width/2, height/2, -200);
   noStroke();
@@ -250,7 +281,7 @@ void basicSetUp() {
   stroke(80);
   noStroke();
   fill(0, 150, 255);
-  sphereDetail(16);
+  //sphereDetail(16);
   //box(1280, 720, 500);
   sphere(900);
   popMatrix();
