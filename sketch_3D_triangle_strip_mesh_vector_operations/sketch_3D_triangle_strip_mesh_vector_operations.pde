@@ -11,8 +11,8 @@ Tools tools = new Tools();
 UniformGrid pointsGrid;
 //float[] trianglesTable;
 int nx, ny = 0;
-int[] minPoint = {50, -100};//{100, 100};
-int[] maxPoint = {1240, 800}; //{1200, 800};
+int[] minPoint = {50, -400};//{100, 100};
+int[] maxPoint = {1240, 1240}; //{1200, 800};
 int triangleCounter = 0;
 
 //Move Sphere
@@ -21,11 +21,13 @@ float[] normalAtLocation = new float[4];
 PShape ship;
 
 void setup() {
-
-  ship = loadShape("15211_Wakeboard_v1_NEW.obj");
+  //"19292_Cat_boat_v1.obj"
+  //"19291_Cabin_cruise_v2_NEW.obj"
+  //"15211_Wakeboard_v1_NEW.obj"
+  ship = loadShape("19291_Cabin_cruise_v2_NEW.obj");
   size(1280, 720, P3D);
-  nx = 32;//32;
-  ny = 24;//24;
+  nx = 16;//32;
+  ny = 16;//24;
   location = ((ny/2)*nx)+(nx/2);
   pointsGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
   //trianglesTable = new float[(nx-1)*(ny-1)];
@@ -35,7 +37,7 @@ void setup() {
 float change = 0;
 float offSet = 0;
 float sample = 0;
-float scalar = 20;
+float scalar = 80;
 float minium = 10;
 float[] matrix = {
   1, 0, 0, 1,
@@ -66,7 +68,7 @@ void samplingMesh() {
     //sample = pointPrime[0]*scalar;
     pointsGrid.setYSamplePosition(linearIndex, (600 + sample));
 
-    offSet = (linearIndex*( PI/8 ));
+    offSet = (linearIndex *( PI/8 ));
   }
 }
 
@@ -82,7 +84,8 @@ void triangleMesh() {
         int b = floor(linearIndex/nx)*nx + ((linearIndex%nx)+1);//p10 l+1;
         int c = (floor(linearIndex/nx)+1)*nx + (linearIndex%nx); //p01 l+nx;
         int d = (floor(linearIndex/nx)+1)*nx + ((linearIndex%nx)+1);// p11 l+nx+1;
-
+        float[] baricenterOne = new float[4];
+        float[] baricenterTwo = new float[4];
 
         float[][] vertices = new float[4][4];
         vertices[0] = pointsGrid.getSamplePosition(a);
@@ -111,8 +114,17 @@ void triangleMesh() {
         displayTriangle(trianglesTable[0], vertices);
         displayTriangle(trianglesTable[1], vertices);
         stroke(0, 0, 255);
-        displayNormals(ABNorm, vertices[0]);
-        displayNormals(DCNorm, vertices[3]);
+
+        baricenterOne[0] = (0.33*vertices[0][0]) + (0.33*vertices[1][0]) + (0.33*vertices[2][0]);
+        baricenterOne[1] = (0.33*vertices[0][1]) + (0.33*vertices[1][1]) + (0.33*vertices[2][1]);
+        baricenterOne[2] = (0.33*vertices[0][2]) + (0.33*vertices[1][2]) + (0.33*vertices[2][2]);
+
+        baricenterTwo[0] = (0.33*vertices[3][0]) + (0.33*vertices[2][0]) + (0.33*vertices[1][0]);
+        baricenterTwo[1] = (0.33*vertices[3][1]) + (0.33*vertices[2][1]) + (0.33*vertices[1][1]);
+        baricenterTwo[2] = (0.33*vertices[3][2]) + (0.33*vertices[2][2]) + (0.33*vertices[1][2]);
+
+        displayNormals(ABNorm, baricenterOne);
+        displayNormals(DCNorm, baricenterTwo);
       }
     }
   }
@@ -135,7 +147,7 @@ void triangleMesh() {
   noStroke();
   fill(255);
   pushMatrix();
-  translate(x+50, y-40, z);
+  translate(x+50, y+50, z);
   //rotateY(PI*(mouseX * 0.001));
   rotateZ((PI/6)+((normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2])*0.5));
   //rotateY(PI);
@@ -145,6 +157,7 @@ void triangleMesh() {
   //rotateZ((PI/2));
   sphereDetail(4);
   sphere(25);
+  scale(0.4);
   shape(ship, 0, 0);
   popMatrix();
 }
@@ -192,7 +205,7 @@ void keyPressed() {
 void displayTriangle(int[] triangleIndexs, float[][] vertices) {
   //stroke(0);
   noStroke();
-  fill(0, 0, 100);
+  fill(0, 100, 200);
   beginShape(TRIANGLES);
   vertex(vertices[triangleIndexs[0]][0], vertices[triangleIndexs[0]][1], vertices[triangleIndexs[0]][2]);
   vertex(vertices[triangleIndexs[1]][0], vertices[triangleIndexs[1]][1], vertices[triangleIndexs[1]][2]);
@@ -226,16 +239,19 @@ void displayNormals(float[] normalVector, float[] origin) {
 }
 
 void basicSetUp() {
-  background(0);
-  ambientLight(100, 100, 100, 0, 0, 0);
+  background(255);
+  ambientLight(200, 200, 200, 0, 0, 0);
   pointLight(255, 255, 255, width/2, -height, 0);
   pushMatrix();
-  translate(width/2, height/2, -100);
+  translate(width/2, height/2, -200);
   noStroke();
   fill(255);
   //sphere(200);
   stroke(80);
-  noFill();
-  box(1280, 720, 500);
+  noStroke();
+  fill(0, 150, 255);
+  sphereDetail(16);
+  //box(1280, 720, 500);
+  sphere(900);
   popMatrix();
 }

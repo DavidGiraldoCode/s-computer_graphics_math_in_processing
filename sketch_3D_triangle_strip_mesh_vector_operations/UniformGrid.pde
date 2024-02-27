@@ -65,6 +65,11 @@ public class UniformGrid {
   }
 
   public float[] getSamplePosition(int linearIndex) {
+    if(linearIndex > samplePoints.length){
+      return samplePoints[samplePoints.length-1];
+    }else if(linearIndex < 0){
+      return samplePoints[0];
+    }
     //int[] coordinates = new int[2];
     //coordinates[0] = (int)(linearIndex % this.nx)*dx;
     //coordinates[1] = (int)(Math.floor(linearIndex / this.nx) % ny)*dy;
