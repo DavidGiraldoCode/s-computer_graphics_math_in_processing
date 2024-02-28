@@ -66,6 +66,8 @@ void setup() {
   P[3] = 1;
 }
 float[] baricenter = new float[4];
+float[] n = new float[4];
+float nLenght = 0;
 void draw() {
   basicSetUp();
   //P11[0] = mouseX;
@@ -81,7 +83,9 @@ void draw() {
 
   crossBA = crossProduct(vectorB, vectorA);
   //crossDC = crossProduct(vectorD, vectorC);
-  vertorNorm(crossBA, P00);
+  n = vertorNorm(crossBA, P00);
+  nLenght = sqrt(pow(n[0],2)+pow(n[1],2)+pow(n[2],2));
+  println("Angler of ny/nL: "+acos((n[1]/nLenght)));
   //vertorNorm(crossDC, P11);
 
   displayTriangle(P00, P10, P01);
@@ -123,8 +127,8 @@ void draw() {
   //float W = 1-U-V;
   float W = factor*det2;
 
-  println("determinant(P00, P10, P10): "+area);
-  println("U:"+U+" V:"+V+" W:"+W+" U+V+W: "+(U+V+W));
+  //println("determinant(P00, P10, P10): "+area);
+  //println("U:"+U+" V:"+V+" W:"+W+" U+V+W: "+(U+V+W));
 
   if ((U+V+W) > 0.1 && (U+V+W) < 0.99) {
     pushMatrix();

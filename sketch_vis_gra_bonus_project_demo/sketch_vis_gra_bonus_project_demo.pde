@@ -1,18 +1,12 @@
 float[] P00, P10, P01, P11;
 int l =0;
-//float[] vectorA, vectorB, vectorC, vectorD, crossBA, crossDC, ABNorm;
-/*float[] translationMatrix = {
- 1, 0, 0, 1,
- 0, 1, 0, 1,
- 0, 0, 1, 1,
- 0, 0, 0, 1};*/
 
 Tools tools = new Tools();
 UniformGrid pointsGrid;
 //float[] trianglesTable;
 int nx, ny = 0;
-int[] minPoint;//= {100, 100};//{50, -400};
-int[] maxPoint; //= {600, 600}; //{1240, 1240};
+int[] minPoint;
+int[] maxPoint;
 int triangleCounter = 0;
 
 //Move Sphere
@@ -28,7 +22,7 @@ boolean showNormals = true;
 float change = 0;
 float offSet = 0;
 float sample = 0;
-float scalar = 0.025;
+float scalar = 0.03;
 float minium = 600;
 
 void setup() {
@@ -37,7 +31,7 @@ void setup() {
   //"19292_Cat_boat_v1.obj"
   //"19291_Cabin_cruise_v2_NEW.obj"
   //"15211_Wakeboard_v1_NEW.obj"
-  ship = loadShape("19291_Cabin_cruise_v2_NEW.obj");
+  ship = loadShape("Boat Texture 1.obj");
   size(1280, 720, P3D);
   switch(scene) {
   case 0: //One triangle, flat, with strokes
@@ -63,6 +57,8 @@ void setup() {
   case 2: //Triangular mesh on a rectilinear grid - with sin() samples
     showStrokes = true;
     doSampling = true;
+
+    scalar = 0.05;
     nx = 4;//32;
     ny = 4;//24;
     minPoint[0]=100;
@@ -75,11 +71,10 @@ void setup() {
     showStrokes = true;
     showNormals = true;
     doSampling = true;
-    nx = 16;//32;
-    ny = 16;//24;
+    nx = 16;
+    ny = 16;
     minPoint[0]=-10;
     minPoint[1]=-500;
-
     maxPoint[0]=1200;
     maxPoint[1]=1200;
     break;
@@ -118,8 +113,8 @@ void samplingMesh() {
   change += PI * 0.01;
 
   if (change >= (PI * 2)) {
-    //change = 0;
-    println("Cycle ends");
+    change = 0;
+    //println("Cycle ends");
   }
 
   for (int linearIndex = 0; linearIndex < pointsGrid.getSize(); linearIndex++) {
@@ -153,8 +148,7 @@ void samplingMesh() {
 
 void triangleMesh() {
 
-
-  triangleCounter = 0;
+  //triangleCounter = 0;
   for (int i = 0; i < pointsGrid.getSize(); i++) {
     int linearIndex = i;
     if ((floor(linearIndex/nx)+1)*nx + ((linearIndex%nx)+1) < pointsGrid.getSize()) {
@@ -173,7 +167,7 @@ void triangleMesh() {
         vertices[3] = pointsGrid.getSamplePosition(d);
 
         int[][] trianglesTable = {{0, 1, 2}, {3, 2, 1}};
-        triangleCounter +=2;
+        //triangleCounter +=2;
         float[] vectorA, vectorB, vectorC, vectorD, crossBA, crossDC, ABNorm, DCNorm;
 
         vectorA = tools.vectorSubstraction(vertices[1], vertices[0]);//(P10, P00)
@@ -218,7 +212,10 @@ void triangleMesh() {
     float x = pointsGrid.getSamplePosition(location)[0];
     float y = pointsGrid.getSamplePosition(location)[1];
     float z = pointsGrid.getSamplePosition(location)[2];
-    float theta = (normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2]);
+    float normalLenght = sqrt(pow(normalAtLocation[0],2)+pow(normalAtLocation[1],2)+pow(normalAtLocation[2],2));
+    //float theta = (normalAtLocation[0]+normalAtLocation[1]+normalAtLocation[2]);
+    float theta = acos(-1*normalAtLocation[1]);
+    println(theta);
     noStroke();
     fill(255, 255, 20);
     pushMatrix();
@@ -229,15 +226,17 @@ void triangleMesh() {
     popMatrix();
     //+theta*0.5
     fill(255);
-    
+
     pushMatrix();
-    translate(x+50, y+40, z);
-    rotateZ((PI/6)+(theta*0.5));
+    //translate(x+50, y+20, z);
+    translate(x+50, y+10, z); // ---------------------------- 
+    //rotateZ((PI/6)+(theta*0.5));
+    rotateZ(theta*0.5); // ---------------------
     rotateY(PI*(mouseX * 0.001));
-    rotateX(PI/2);
+    rotateX(PI);
     //sphereDetail(4);
     //sphere(25);
-    scale(0.4);
+    scale(0.5);
     shape(ship, 0, 0);
     popMatrix();
   }
@@ -252,6 +251,9 @@ void draw() {
     }
     triangleMesh();
   }
+  //translate(width/2, height/2 );
+  //scale(0.4);
+  //shape(ship, 0, 0);
 }
 
 void keyPressed() {
@@ -294,7 +296,7 @@ void displayTriangle(int[] triangleIndexs, float[][] vertices) {
   } else {
     noStroke();
   }
-  fill(0, 100, 200);
+  fill(0, 100, (vertices[0][1]*0.5));
   beginShape(TRIANGLES);
   vertex(vertices[triangleIndexs[0]][0], vertices[triangleIndexs[0]][1], vertices[triangleIndexs[0]][2]);
   vertex(vertices[triangleIndexs[1]][0], vertices[triangleIndexs[1]][1], vertices[triangleIndexs[1]][2]);
