@@ -14,7 +14,7 @@ int location;
 float[] normalAtLocation = new float[4];
 PShape ship;
 
-int scene = 4;
+int scene = 3;
 boolean doSampling = false;
 boolean showStrokes = true;
 boolean showNormals = true;
@@ -71,8 +71,8 @@ void setup() {
     showStrokes = true;
     showNormals = true;
     doSampling = true;
-    nx = 16;
-    ny = 16;
+    nx = 48;
+    ny = 48;
     minPoint[0]=-10;
     minPoint[1]=-500;
     maxPoint[0]=1200;
@@ -142,7 +142,8 @@ void samplingMesh() {
     sample = (pointPrime[0]-offSet)*scalar;//[0]*scalar;
     pointsGrid.setYSamplePosition(linearIndex, (minium + sample));
 
-    offSet = linearIndex * (PI / 8) ;//PI + (linearIndex*0.05); //(PI / (linearIndex);// /( PI * -0.5));
+    //offSet = linearIndex * (PI / 8) ;//PI + (linearIndex*0.05); //(PI / (linearIndex);// /( PI * -0.5));
+    offSet = (linearIndex*0.05) * (PI / 20) ;
   }
 }
 
