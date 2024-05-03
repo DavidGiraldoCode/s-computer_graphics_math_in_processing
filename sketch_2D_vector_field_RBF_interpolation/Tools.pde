@@ -82,13 +82,13 @@ public class Tools {
 
   float[] vertorNorm(float[] vector) {
     //offsetOrigin is used to move the normal vecotr from [0,0] to the tip of the position vectors
-    float vectorLenght = sqrt(pow(vector[0], 2)+pow(vector[1], 2)+pow(vector[2], 2));
+    float vectorLenght = sqrt(pow(vector[0], 2)+pow(vector[1], 2));//+pow(vector[2], 2));
 
     float xn = vector[0]/vectorLenght;
     float yn = vector[1]/vectorLenght;
-    float zn = vector[2]/vectorLenght;
+    //float zn = vector[2]/vectorLenght;
 
-    float[] normalizedVector = {xn, yn, zn, 1};// Affine coordinates
+    float[] normalizedVector = {xn, yn};//, zn, 1};// Affine coordinates
     return normalizedVector;
   }
 

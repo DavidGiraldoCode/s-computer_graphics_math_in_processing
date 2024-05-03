@@ -49,7 +49,7 @@ public class UniformGrid {
         //if (ny > 1) {
 
         sample = ((cos((linearIndex * 0.01) - offSet) * scalar ));
-        samplePoints[linearIndex][1] = 600;// + sample;//(y*dy) + yMin;//((y*dy) + yMin)*-1;
+        samplePoints[linearIndex][1] = (y*dy) + yMin;//((y*dy) + yMin)*-1;
 
         //samplePoints[linearIndex][1] = 600 + random(-50, 50);//(y*dy) + yMin;//((y*dy) + yMin)*-1;
         offSet = (linearIndex*( PI/4 ));

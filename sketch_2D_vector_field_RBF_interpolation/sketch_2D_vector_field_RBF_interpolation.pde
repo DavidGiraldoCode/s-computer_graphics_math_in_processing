@@ -1,12 +1,28 @@
 /* Brute force approach to vector fields interpolation of scattred data
  *
  *
- *
+ Log 2024 05 2
+ I created a gaussian elimination def in C# with ChatGPT to compute the
+ lamdas of the systems of lienar equations. Then pass them here.
+ double[,] matrixX = {
+            {0,     2.82,  2,   1 }, //LambaX1 = -0.427
+            {2.82,  0,     2,   0 }, //LambaX2 = -0.072
+            {2,     2,     0,   -1 }, //LambaX3 = 0.60
+        };
+ double[,] matrixY = {
+            {0,     2.82,  2,   2 }, //LambaY1 = 0.322
+            {2.82,  0,     2,   1 }, //LambaY2 = 0.677
+            {2,     2,     0,   2 }, //LambaY3 = 0.045
+        };
+ Now the vectors seems to behaive properly.
+ 
  */
-float[] P1 = {-100, -200}; //Source points
-float[] P2 = {100, 100}; //Source points
-float[] V1 = {0, 100}; //Vector at source points
-float[] V2 = {100, 0}; //Vector at source points
+float[] P1 = {100, 100}; //Source points
+float[] P2 = {-100, -100}; //Source points
+float[] P3 = {100, -100}; //Source points
+float[] V1 = {100, 200}; //Vector at source points
+float[] V2 = {0, 100}; //Vector at source points
+float[] V3 = {-100, 200}; //Vector at source points
 
 float[] P  = new float[2]; //Any point and Interpolated Vector
 float[] V  = new float[2]; //Any point and Interpolated Vector
@@ -35,18 +51,20 @@ void setup() {
   minPoint = new int[2];
   maxPoint = new int[2];
 
-  nx = 2;//32;
-  ny = 2;//24;
-  minPoint[0]=100;
-  minPoint[1]=100;
+  nx = 32;
+  ny = 32;
+  minPoint[0]=-400;
+  minPoint[1]=-400;
 
-  maxPoint[0]=800;
-  maxPoint[1]=600;
+  maxPoint[0]=400;
+  maxPoint[1]=400;
 
   pointsGrid = new UniformGrid(nx, ny, minPoint, maxPoint);
 
   renderSourceVectorAtPoint(P1, V1);
   renderSourceVectorAtPoint(P2, V2);
+  renderSourceVectorAtPoint(P3, V3);
+  renderVectorFieldGrid();
 }
 
 void renderSourceVectorAtPoint(float[] point, float[] vector)
@@ -61,61 +79,67 @@ void renderSourceVectorAtPoint(float[] point, float[] vector)
 
 void renderAnyVectorAtAnyPoint(float[] point, float[] vector)
 {
-  stroke(0, 0, 255);
+  float[] plotVector = tools.vertorNorm(vector);
+  float scalar = 8;
+  int val = (int)map(tools.vectorMagnitud(vector), 0, 500, 0, 255);
+  stroke(val, val, 255);
   pushMatrix();
   translate(point[0], point[1]);
-  line(0, 0, vector[0], vector[1]);
-  ellipse(vector[0], vector[1], 10, 10);
+  line(0, 0, plotVector[0]*scalar, plotVector[1]*scalar);
   popMatrix();
 }
 
 void computeRBD_BruteForce(float[] point)
 {
-  println("computeRBD_BruteForce at: " + point);
-  // Hardcoded field cooheficients for P1 and V1
-  float lamda1x = V1[0]*0.01;
-  float lamda1y = V1[1]*0.01;
-  // Hardcoded field cooheficients for P2 and V2
-  float lamda2x = V2[0]*0.01;
-  float lamda2y = V2[1]*0.01;
+  /* 
+  Logs 2024 05 1
+   - It does not yield the desired outcome
+   Vector is getting shorter the closer they get to the source
+   and it shoudl the the opposite.
+   
+   Logs 2024 05 1
+   - Computing the interpolant for each v-coordinate to find lamba
+   for each coordinate. This works. 
+   But there are some wird behaviors sucha as the V vector growing to much when going far away from V1
+   [Phi]matrix x [LamdaX]vector = [x-sourceVectorCoordinates]
+   [Phi]matrix x [LamdaY]vector = [x-sourceVectorCoordinates]
+   */
+   
+  // Computed by hand
+  
+            
+  float lamdaX1 = -0.427;
+  float lamdaX2 = -0.072;
+  float lamdaX3 = 0.60;
+            
+  float lamdaY1 = 0.322;
+  float lamdaY2 = 0.677;
+  float lamdaY3 = 0.045;
   
   float[] distanceV1 = tools.vectorSubstraction(P, P1);
   float r1 = tools.vectorMagnitud(distanceV1);
+  float RBF1 = r1;//pow(r1,2) * log10(r1);
 
   float[] distanceV2 = tools.vectorSubstraction(P, P2);
   float r2 = tools.vectorMagnitud(distanceV2);
+  float RBF2 = r2;// pow(r2,2) * log10(r2);
+  
+  float[] distanceV3 = tools.vectorSubstraction(P, P3);
+  float r3 = tools.vectorMagnitud(distanceV3);
+  float RBF3 = r2;// pow(r2,2) * log10(r2);
 
-  float interpolantX = (r1 * lamda1x) + (r2 * lamda2x);
-  float interpolantY = (r1 * lamda1y) + (r2 * lamda2y);
+  float interpolantX = (lamdaX1 * RBF1) + (lamdaX2 * RBF2) + (lamdaX3 * RBF3);
+  float interpolantY = (lamdaY1 * RBF1) + (lamdaY2 * RBF2) + (lamdaY3 * RBF3);
 
   float[] InterpolatedVector = {interpolantX, interpolantY};
 
   renderAnyVectorAtAnyPoint(point, InterpolatedVector);
 }
+// Calculates the base-10 logarithm of a number
+float log10 (float x) {
+  return (log(x) / log(10));
+}
 
-/* psudo code
- 
- lamda1x = 0.1;
- lamda1y = 0.5;
- 
- lamda2x = 0.5;
- lamda2y = 0.1;
- 
- distanceV1 = vectorSubstraction(P, P1);
- r1 = vectorMagnitud(distanceV);
- 
- distanceV2 = vectorSubstraction(P, P2);
- r2 = vectorMagnitud(distanceV);
- 
- interpolantX = (r1 * lamda1x) + (r2 * lamda2x);
- interpolantY = (r1 * lamda1y) + (r2 * lamda2x);
- 
- float[] InterpolatedVector = {interpolantX, interpolantY}
- 
- renderAnyVectorAtAnyPoint(P, InterpolatedVector);
- 
- 
- */
 float[] matrix = {
   1, 0, 0, 0,
   0, 1, 0, 0,
@@ -125,12 +149,61 @@ float[] matrix = {
 void draw() {
 }
 
+float[] setVectorAtPoint(float[] point){
+  
+  float lamdaX1 = -0.427;
+  float lamdaX2 = -0.072;
+  float lamdaX3 = 0.60;
+            
+  float lamdaY1 = 0.322;
+  float lamdaY2 = 0.677;
+  float lamdaY3 = 0.045;
+  
+  float[] distanceV1 = tools.vectorSubstraction(point, P1);
+  float r1 = tools.vectorMagnitud(distanceV1);
+  float RBF1 = r1;//pow(r1,2) * log10(r1);
+
+  float[] distanceV2 = tools.vectorSubstraction(point, P2);
+  float r2 = tools.vectorMagnitud(distanceV2);
+  float RBF2 = r2;// pow(r2,2) * log10(r2);
+  
+  float[] distanceV3 = tools.vectorSubstraction(point, P3);
+  float r3 = tools.vectorMagnitud(distanceV3);
+  float RBF3 = r2;// pow(r2,2) * log10(r2);
+
+  float interpolantX = (lamdaX1 * RBF1) + (lamdaX2 * RBF2) + (lamdaX3 * RBF3);
+  float interpolantY = (lamdaY1 * RBF1) + (lamdaY2 * RBF2) + (lamdaY3 * RBF3);
+
+  float[] InterpolatedVector = {interpolantX, interpolantY};
+  
+  return InterpolatedVector;
+}
+
+void renderVectorFieldGrid(){
+  println(pointsGrid.getSamplePosition(0));
+  
+  for(int i = 0; i < pointsGrid.getSize(); i++)
+  {
+    
+    fill(255);
+    noStroke();
+    float x = pointsGrid.getSamplePosition(i)[0];
+    float y = pointsGrid.getSamplePosition(i)[1];
+    
+    float[] point = {x , y};
+    float[] vector = setVectorAtPoint(point);
+    renderAnyVectorAtAnyPoint(point, vector);
+    ellipse(x, y, 1, 1);
+  }
+}
+
 void mousePressed() {
   background(0, 0, 0);
   createCoordinatesSystem();
   
   renderSourceVectorAtPoint(P1, V1);
   renderSourceVectorAtPoint(P2, V2);
+  renderSourceVectorAtPoint(P3, V3);
   
   P[0] = globalMouseX();
   P[1] = globalMouseY();
